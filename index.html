@@ -1,764 +1,1325 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Your Name — Developer</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<title>Phàm Nhân Tu Tiên — Bot Discord Tu Tiên Huyền Huyễn</title>
+<meta name="description" content="Phàm Nhân Tu Tiên — bot Discord tu tiên: tu luyện, đột phá cảnh giới, bí cảnh, tông môn, PvP, đạo lữ, linh thú, thiên kiếp và phi thăng tiên giới.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,500;0,600;0,700;0,900;1,400&family=Oswald:wght@400;500;600;700&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+
 <style>
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+/* ===================== RESET ===================== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+img,svg{display:block;max-width:100%;}
+a{color:inherit;text-decoration:none;}
+button{font:inherit;cursor:pointer;background:none;border:none;color:inherit;}
+ul{list-style:none;}
 
-:root {
-  --bg: #060608;
-  --bg2: #0d0d10;
-  --white: #e8e8ec;
-  --dim: rgba(232,232,236,0.35);
-  --border: rgba(232,232,236,0.08);
-  --border-bright: rgba(232,232,236,0.18);
-  --glow: rgba(232,232,236,0.06);
-  --mono: 'Space Mono', monospace;
-  --sans: 'Space Grotesk', sans-serif;
-}
+/* ===================== TOKENS ===================== */
+:root{
+  --void:        #0a0c11;
+  --void-deep:   #05060a;
+  --ink:         #12151d;
+  --ink-soft:    #181c26;
+  --gold:        #c9a35f;
+  --gold-bright: #ecca8d;
+  --jade:        #3a7d6b;
+  --jade-bright: #6fd9b8;
+  --crimson:     #8c3c3c;
+  --parchment:   #ece5d4;
+  --parchment-dim: #a9a394;
+  --line:        rgba(201,163,95,0.16);
 
-html { scroll-behavior: smooth; }
+  --font-display: 'Noto Serif', serif;
+  --font-brush:   'Ma Shan Zheng', cursive;
+  --font-ui:      'Oswald', sans-serif;
 
-body {
-  background: var(--bg);
-  color: var(--white);
-  font-family: var(--sans);
-  font-size: 16px;
-  line-height: 1.6;
-  overflow-x: hidden;
-  cursor: none;
-}
-
-/* ── Scanline overlay ── */
-body::before {
-  content: '';
-  position: fixed; inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(0,0,0,0.03) 2px,
-    rgba(0,0,0,0.03) 4px
-  );
-  pointer-events: none;
-  z-index: 9000;
+  --container: 1180px;
 }
 
-/* ── Noise grain ── */
-body::after {
-  content: '';
-  position: fixed; inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-  opacity: 0.025;
-  pointer-events: none;
-  z-index: 9001;
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important;}
 }
 
-/* ── Cursor ── */
-.cursor {
-  width: 6px; height: 6px;
-  background: var(--white);
-  border-radius: 50%;
-  position: fixed;
-  pointer-events: none;
-  z-index: 9999;
-  transform: translate(-50%, -50%);
-  transition: width 0.2s ease, height 0.2s ease, background 0.2s ease;
-  box-shadow: 0 0 10px rgba(232,232,236,0.6);
-}
-.cursor.expand {
-  width: 36px; height: 36px;
-  background: transparent;
-  border: 1px solid rgba(232,232,236,0.5);
-  box-shadow: 0 0 20px rgba(232,232,236,0.15), inset 0 0 10px rgba(232,232,236,0.05);
+/* ===================== BASE ===================== */
+body{
+  background:var(--void);
+  color:var(--parchment);
+  font-family:var(--font-display);
+  line-height:1.6;
+  overflow-x:hidden;
+  position:relative;
 }
 
-/* ── Grid background lines ── */
-.grid-bg {
-  position: fixed; inset: 0;
-  background-image:
-    linear-gradient(var(--border) 1px, transparent 1px),
-    linear-gradient(90deg, var(--border) 1px, transparent 1px);
-  background-size: 64px 64px;
-  pointer-events: none;
-  z-index: 0;
+/* ambient glow, no image required */
+body::before, body::after{
+  content:"";
+  position:fixed;
+  border-radius:50%;
+  filter:blur(120px);
+  opacity:0.16;
+  z-index:0;
+  pointer-events:none;
+}
+body::before{
+  width:600px;height:600px;
+  background:var(--jade);
+  top:-200px; left:-150px;
+}
+body::after{
+  width:520px;height:520px;
+  background:var(--gold);
+  bottom:10%; right:-180px;
 }
 
-/* ── Nav ── */
-nav {
-  position: fixed; top: 0; left: 0; right: 0;
-  z-index: 100;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 20px 48px;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.3s, background 0.3s;
-}
-nav.scrolled {
-  background: rgba(6,6,8,0.85);
-  backdrop-filter: blur(20px);
-  border-bottom-color: var(--border);
-}
-.nav-logo {
-  font-family: var(--mono);
-  font-size: 12px;
-  letter-spacing: 0.12em;
-  text-decoration: none;
-  color: var(--white);
-  position: relative;
-}
-.nav-logo::before {
-  content: '> ';
-  color: var(--dim);
-}
-.nav-links { display: flex; gap: 32px; list-style: none; align-items: center; }
-.nav-links a {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--dim);
-  text-decoration: none;
-  transition: color 0.2s;
-  position: relative;
-}
-.nav-links a::after {
-  content: '';
-  position: absolute; bottom: -3px; left: 0;
-  width: 0; height: 1px;
-  background: var(--white);
-  transition: width 0.2s ease;
-}
-.nav-links a:hover { color: var(--white); }
-.nav-links a:hover::after { width: 100%; }
-
-/* ── Hero ── */
-#hero {
-  min-height: 100vh;
-  display: flex; flex-direction: column; justify-content: flex-end;
-  padding: 0 48px 80px;
-  border-bottom: 1px solid var(--border);
-  position: relative;
-  z-index: 1;
+.container{
+  max-width:var(--container);
+  margin:0 auto;
+  padding:0 28px;
+  position:relative;
+  z-index:1;
 }
 
-.hero-top {
-  position: absolute; top: 120px; left: 48px; right: 48px;
-  display: flex; justify-content: space-between; align-items: flex-start;
+.eyebrow{
+  font-family:var(--font-ui);
+  font-weight:600;
+  letter-spacing:0.32em;
+  text-transform:uppercase;
+  font-size:0.74rem;
+  color:var(--gold);
+  display:inline-flex;
+  align-items:center;
+  gap:12px;
 }
-.hero-status {
-  display: flex; align-items: center; gap: 10px;
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  color: var(--dim);
-  text-transform: uppercase;
-}
-.status-dot {
-  width: 6px; height: 6px;
-  background: #e8e8ec;
-  border-radius: 50%;
-  animation: blink 2s ease-in-out infinite;
-  box-shadow: 0 0 8px rgba(232,232,236,0.8);
-}
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
-
-.hero-time {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--dim);
-  letter-spacing: 0.08em;
+.eyebrow::before{
+  content:"";
+  width:22px; height:1px;
+  background:var(--gold);
+  display:inline-block;
 }
 
-.hero-name {
-  font-family: var(--sans);
-  font-size: clamp(64px, 10vw, 136px);
-  font-weight: 700;
-  line-height: 0.92;
-  letter-spacing: -0.03em;
-  margin-bottom: 48px;
-  position: relative;
-}
-.hero-name .line2 {
-  display: block;
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(232,232,236,0.25);
-  letter-spacing: -0.02em;
+h1,h2,h3{
+  font-family:var(--font-display);
+  font-weight:700;
+  color:var(--parchment);
+  letter-spacing:0.01em;
 }
 
-.hero-bottom {
-  display: flex; align-items: flex-end; justify-content: space-between;
-  gap: 40px;
+.section-head{
+  max-width:680px;
+  margin-bottom:56px;
 }
-.hero-desc {
-  max-width: 380px;
-  font-size: 14px;
-  font-weight: 300;
-  line-height: 1.9;
-  color: var(--dim);
+.section-head h2{
+  font-size:clamp(1.9rem, 3.4vw, 2.7rem);
+  margin:14px 0 16px;
 }
-.hero-cta {
-  display: flex; align-items: center; gap: 16px;
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--dim);
-  text-decoration: none;
-  border: 1px solid var(--border-bright);
-  padding: 14px 24px;
-  transition: all 0.25s ease;
-  white-space: nowrap;
+.section-head p{
+  color:var(--parchment-dim);
+  font-size:1.02rem;
+  line-height:1.85;
 }
-.hero-cta:hover {
-  color: var(--white);
-  border-color: var(--white);
-  background: rgba(232,232,236,0.04);
-  box-shadow: 0 0 30px rgba(232,232,236,0.06);
-}
-.hero-cta::after { content: '→'; transition: transform 0.2s; }
-.hero-cta:hover::after { transform: translateX(4px); }
-
-/* big bg text */
-.hero-bg-text {
-  position: absolute;
-  bottom: 60px; right: 40px;
-  font-family: var(--mono);
-  font-size: clamp(100px, 16vw, 200px);
-  font-weight: 700;
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(232,232,236,0.04);
-  pointer-events: none;
-  line-height: 1;
-  letter-spacing: -0.04em;
+.section-head.center{
+  text-align:center;
+  margin-left:auto;
+  margin-right:auto;
 }
 
-/* ── Section base ── */
-section {
-  padding: 100px 48px;
-  border-bottom: 1px solid var(--border);
-  position: relative;
-  z-index: 1;
-}
-.section-label {
-  display: flex; align-items: center; gap: 16px;
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--dim);
-  margin-bottom: 72px;
-}
-.section-label .num {
-  color: rgba(232,232,236,0.15);
-  font-size: 11px;
-}
-.section-label::after {
-  content: '';
-  flex: 1; height: 1px;
-  background: var(--border);
+section{
+  position:relative;
+  padding:110px 0;
+  z-index:1;
 }
 
-/* ── About ── */
-.about-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 80px;
+/* ===================== BUTTONS ===================== */
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  padding:15px 34px;
+  font-family:var(--font-ui);
+  font-weight:600;
+  font-size:0.84rem;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  border-radius:3px;
+  transition:transform .25s ease, box-shadow .25s ease, background .25s ease;
+  white-space:nowrap;
 }
-.about-heading {
-  font-size: clamp(30px, 3.5vw, 48px);
-  font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.025em;
+.btn--primary{
+  background:linear-gradient(135deg, var(--gold-bright), var(--gold));
+  color:var(--void-deep);
+  border:1px solid var(--gold-bright);
+  box-shadow:0 0 0 0 rgba(201,163,95,0.5);
 }
-.about-heading .hollow {
-  display: block;
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(232,232,236,0.3);
+.btn--primary:hover{
+  transform:translateY(-3px);
+  box-shadow:0 14px 30px -8px rgba(201,163,95,0.55);
 }
-.about-text {
-  font-size: 14px;
-  font-weight: 300;
-  line-height: 1.95;
-  color: var(--dim);
-  margin-bottom: 36px;
+.btn--ghost{
+  background:transparent;
+  border:1px solid var(--line);
+  color:var(--parchment);
 }
-.about-meta { display: flex; flex-direction: column; }
-.meta-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 13px 0;
-  border-top: 1px solid var(--border);
-  font-size: 13px;
+.btn--ghost:hover{
+  border-color:var(--jade-bright);
+  color:var(--jade-bright);
+  transform:translateY(-3px);
 }
-.meta-row:last-child { border-bottom: 1px solid var(--border); }
-.meta-key {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  color: var(--dim);
-  text-transform: uppercase;
-}
-.meta-val { font-weight: 500; font-size: 13px; }
-
-/* ── Skills ── */
-.skills-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-}
-.skill-card {
-  background: var(--bg);
-  padding: 36px 30px;
-  transition: background 0.25s ease;
-  position: relative;
-  overflow: hidden;
-}
-.skill-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: transparent;
-  transition: background 0.25s;
-}
-.skill-card:hover { background: var(--bg2); }
-.skill-card:hover::before { background: rgba(232,232,236,0.3); }
-
-.skill-cat {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--dim);
-  margin-bottom: 16px;
-}
-.skill-name {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 20px;
-  letter-spacing: -0.01em;
-}
-.skill-items { display: flex; flex-wrap: wrap; gap: 6px; }
-.skill-item {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--dim);
-  padding: 4px 10px;
-  border: 1px solid var(--border);
-  letter-spacing: 0.04em;
-  transition: border-color 0.2s, color 0.2s;
-}
-.skill-card:hover .skill-item {
-  border-color: var(--border-bright);
-  color: rgba(232,232,236,0.6);
+.btn-row{
+  display:flex;
+  gap:18px;
+  flex-wrap:wrap;
 }
 
-/* ── Projects ── */
-.projects-list { display: flex; flex-direction: column; }
-.project-row {
-  display: grid;
-  grid-template-columns: 60px 1fr auto;
-  align-items: center;
-  gap: 40px;
-  padding: 28px 0;
-  border-top: 1px solid var(--border);
-  cursor: none;
-  transition: padding-left 0.3s ease, background 0.2s;
-  position: relative;
+/* ===================== SCROLLBAR TÙY BIẾN ===================== */
+/* Đây là thanh kéo (scrollbar) thật của trình duyệt — chỉnh màu ở đây
+   nếu muốn đổi tông màu, không liên quan tới mạch tu luyện bên dưới. */
+html{
+  scrollbar-width:thin;                 /* Firefox: độ rộng thanh cuộn */
+  scrollbar-color:var(--gold) var(--void); /* Firefox: màu thanh / màu nền rãnh */
 }
-.project-row::after {
-  content: '';
-  position: absolute; left: 0; top: 0; bottom: 0;
-  width: 0;
-  background: var(--glow);
-  transition: width 0.3s ease;
+::-webkit-scrollbar{                    /* Chrome, Edge, Safari */
+  width:11px;
+  height:11px;
 }
-.project-row:hover::after { width: 100%; }
-.project-row:last-child { border-bottom: 1px solid var(--border); }
-.project-row:hover { padding-left: 20px; }
-.project-num {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: rgba(232,232,236,0.2);
-  letter-spacing: 0.05em;
-  position: relative; z-index: 1;
+::-webkit-scrollbar-track{
+  background:var(--void);
 }
-.project-info { position: relative; z-index: 1; }
-.project-title {
-  font-size: clamp(20px, 2vw, 28px);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  margin-bottom: 5px;
-  transition: color 0.2s;
+::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg, var(--gold-bright), var(--gold));
+  border-radius:6px;
+  border:2px solid var(--void);
 }
-.project-row:hover .project-title { color: rgba(232,232,236,0.7); }
-.project-desc {
-  font-size: 12px;
-  color: var(--dim);
-  font-weight: 300;
-}
-.project-tags {
-  display: flex; gap: 6px; flex-wrap: wrap;
-  justify-content: flex-end;
-  position: relative; z-index: 1;
-}
-.tag {
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  padding: 4px 10px;
-  border: 1px solid var(--border);
-  color: var(--dim);
-  white-space: nowrap;
-  transition: border-color 0.2s, color 0.2s;
-}
-.project-row:hover .tag { border-color: var(--border-bright); color: rgba(232,232,236,0.6); }
-
-/* ── Contact ── */
-#contact {
-  border-bottom: none;
-  min-height: 60vh;
-  display: flex; flex-direction: column; justify-content: center;
-}
-.contact-inner {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 80px;
-  align-items: end;
-}
-.contact-heading {
-  font-size: clamp(36px, 5.5vw, 72px);
-  font-weight: 700;
-  line-height: 1.05;
-  letter-spacing: -0.025em;
-}
-.contact-heading .hollow {
-  display: block;
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(232,232,236,0.25);
-}
-.contact-text {
-  font-size: 14px;
-  font-weight: 300;
-  color: var(--dim);
-  line-height: 1.9;
-  margin-bottom: 36px;
-}
-.contact-links { display: flex; flex-direction: column; }
-.contact-link {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 0;
-  border-top: 1px solid var(--border);
-  text-decoration: none;
-  color: var(--white);
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  transition: padding-left 0.2s ease, background 0.2s;
-}
-.contact-link:last-child { border-bottom: 1px solid var(--border); }
-.contact-link:hover { padding-left: 12px; }
-.contact-link span {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--dim);
-  letter-spacing: 0.06em;
+::-webkit-scrollbar-thumb:hover{
+  background:var(--gold-bright);
 }
 
-/* ── Footer ── */
-footer {
-  padding: 20px 48px;
-  display: flex; align-items: center; justify-content: space-between;
-  border-top: 1px solid var(--border);
-  position: relative; z-index: 1;
+/* ===================== MERIDIAN (signature scroll spine) ===================== */
+.meridian{
+  position:fixed;
+  left:26px; top:50%;
+  transform:translateY(-50%);
+  height:62vh;
+  width:34px;
+  z-index:60;
+  display:flex;
+  align-items:center;
+  pointer-events:none;
 }
-.footer-left, .footer-right {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: rgba(232,232,236,0.2);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+.meridian__track{
+  position:relative;
+  width:2px;
+  height:100%;
+  background:rgba(236,229,212,0.08);
+  margin:0 auto;
+  border-radius:2px;
+}
+.meridian__fill{
+  position:absolute;
+  bottom:0; left:0;
+  width:100%;
+  height:0%;
+  background:linear-gradient(to top, var(--jade-bright), var(--gold-bright));
+  border-radius:2px;
+  box-shadow:0 0 12px var(--gold-bright);
+  transition:height .15s linear;
+}
+.meridian__node{
+  position:absolute;
+  left:50%;
+  width:7px; height:7px;
+  border-radius:50%;
+  background:var(--void);
+  border:1px solid rgba(236,229,212,0.35);
+  transform:translate(-50%,50%);
+  transition:background .3s, border-color .3s, box-shadow .3s;
+}
+.meridian__node.is-active{
+  background:var(--gold-bright);
+  border-color:var(--gold-bright);
+  box-shadow:0 0 8px var(--gold-bright);
+}
+.meridian__label{
+  position:absolute;
+  left:16px;
+  top:50%;
+  transform:translateY(-50%);
+  font-family:var(--font-ui);
+  font-size:0.62rem;
+  letter-spacing:0.12em;
+  white-space:nowrap;
+  color:var(--parchment-dim);
+  opacity:0;
+  transition:opacity .2s;
+}
+.meridian__node:hover .meridian__label{opacity:1;}
+
+@media (max-width: 980px){
+  .meridian{display:none;} /* trên di động ẩn để không vướng nội dung */
 }
 
-/* ── Reveal ── */
-.reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.8s ease, transform 0.8s ease; }
-.reveal.visible { opacity: 1; transform: translateY(0); }
+/* ===================== HEADER / NAV ===================== */
+.site-header{
+  position:fixed;
+  top:0; left:0; right:0;
+  z-index:50;
+  background:rgba(10,12,17,0.72);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.nav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:16px 28px;
+  max-width:var(--container);
+  margin:0 auto;
+}
+.nav__brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.nav__seal{
+  width:40px;height:40px;
+  border:1px solid var(--gold);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:var(--font-brush);
+  font-size:1.3rem;
+  color:var(--gold-bright);
+  flex-shrink:0;
+}
+.nav__brand-text{
+  display:flex;
+  flex-direction:column;
+  line-height:1.1;
+}
+.nav__brand-text strong{
+  font-size:1.02rem;
+  letter-spacing:0.03em;
+  color:var(--parchment);
+}
+.nav__brand-text span{
+  font-family:var(--font-ui);
+  font-size:0.6rem;
+  letter-spacing:0.22em;
+  color:var(--gold);
+  text-transform:uppercase;
+}
+.nav__links{
+  display:flex;
+  gap:34px;
+  font-family:var(--font-ui);
+  font-size:0.78rem;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+}
+.nav__links a{
+  color:var(--parchment-dim);
+  transition:color .2s;
+  position:relative;
+}
+.nav__links a:hover{color:var(--gold-bright);}
+.nav__actions{
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+.nav__actions .btn{padding:11px 22px; font-size:0.72rem;}
 
-/* ── Responsive ── */
-@media (max-width: 768px) {
-  nav { padding: 18px 24px; }
-  .nav-links { display: none; }
-  section { padding: 60px 24px; }
-  #hero { padding: 0 24px 56px; }
-  .hero-top { left: 24px; right: 24px; }
-  .about-grid, .contact-inner { grid-template-columns: 1fr; gap: 40px; }
-  .skills-grid { grid-template-columns: 1fr; }
-  .project-row { grid-template-columns: 40px 1fr; gap: 16px; }
-  .project-tags { display: none; }
-  footer { padding: 18px 24px; flex-direction: column; gap: 6px; }
-  .hero-bg-text { display: none; }
+.nav__burger{
+  display:none;
+  width:32px; height:24px;
+  position:relative;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.nav__burger span{
+  display:block;
+  height:2px;
+  background:var(--parchment);
+  border-radius:2px;
+  transition:transform .25s, opacity .25s;
+}
+
+@media (max-width: 860px){
+  .nav__links{display:none;}
+  .nav__actions .btn--ghost{display:none;}
+  .nav__burger{display:flex;}
+}
+
+.nav__mobile{
+  max-height:0;
+  overflow:hidden;
+  transition:max-height .3s ease;
+  border-top:1px solid var(--line);
+}
+.nav__mobile.is-open{max-height:340px;}
+.nav__mobile ul{
+  display:flex;
+  flex-direction:column;
+  padding:18px 28px 26px;
+  gap:18px;
+  font-family:var(--font-ui);
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  font-size:0.82rem;
+}
+.nav__mobile a{color:var(--parchment-dim);}
+
+/* ===================== HERO ===================== */
+.hero{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  position:relative;
+  padding-top:120px;
+  padding-bottom:80px;
+  background-size:cover;
+  background-position:center;
+  overflow:hidden;
+}
+/* lớp phủ tối để chữ luôn đọc được dù ảnh nền sáng/tối thế nào */
+.hero::before{
+  content:"";
+  position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(58,125,107,0.25), transparent 55%),
+    linear-gradient(180deg, rgba(5,6,10,0.55) 0%, rgba(5,6,10,0.75) 55%, var(--void) 100%);
+  z-index:1;
+}
+.hero__particles{
+  position:absolute; inset:0;
+  z-index:1;
+  pointer-events:none;
+}
+.particle{
+  position:absolute;
+  bottom:-10px;
+  width:3px; height:3px;
+  border-radius:50%;
+  background:var(--gold-bright);
+  box-shadow:0 0 6px var(--gold-bright);
+  opacity:0;
+  animation:rise linear infinite;
+}
+@keyframes rise{
+  0%{opacity:0; transform:translate(0,0);}
+  10%{opacity:0.8;}
+  90%{opacity:0.5;}
+  100%{opacity:0; transform:translate(var(--drift,20px), -110vh);}
+}
+
+.hero__content{
+  position:relative;
+  z-index:2;
+  max-width:760px;
+  margin:0 auto;
+  text-align:center;
+}
+.hero__brush{
+  font-family:var(--font-brush);
+  font-size:2.4rem;
+  color:var(--gold);
+  opacity:0.85;
+  margin-bottom:6px;
+}
+.hero h1{
+  font-size:clamp(2.6rem, 7vw, 5.2rem);
+  font-weight:900;
+  line-height:1.05;
+  margin:18px 0 22px;
+  background:linear-gradient(135deg, var(--parchment) 30%, var(--gold-bright) 70%, var(--gold));
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.hero p{
+  font-size:1.08rem;
+  color:var(--parchment-dim);
+  max-width:560px;
+  margin:0 auto 38px;
+  line-height:1.9;
+}
+.hero .btn-row{justify-content:center;}
+
+.scroll-cue{
+  position:absolute;
+  bottom:36px; left:50%;
+  transform:translateX(-50%);
+  z-index:2;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  font-family:var(--font-ui);
+  font-size:0.65rem;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--parchment-dim);
+  animation:bob 2.6s ease-in-out infinite;
+}
+@keyframes bob{
+  0%,100%{transform:translate(-50%,0);}
+  50%{transform:translate(-50%,8px);}
+}
+
+.mountains{
+  position:absolute;
+  bottom:-2px; left:0; right:0;
+  z-index:1;
+  width:100%;
+  line-height:0;
+}
+
+/* ===================== REVEAL ===================== */
+.reveal{
+  opacity:0;
+  transform:translateY(28px);
+  transition:opacity .7s ease, transform .7s ease;
+}
+.reveal.is-visible{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* ===================== VOWS (Tông Quy) ===================== */
+.vows{
+  background:var(--ink);
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+}
+.vows__grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:1px;
+  background:var(--line);
+  border:1px solid var(--line);
+}
+.vow-card{
+  background:var(--ink);
+  padding:34px 24px;
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:14px;
+}
+.vow-card__icon{
+  width:44px; height:44px;
+  color:var(--gold);
+}
+.vow-card h3{
+  font-size:1rem;
+  font-weight:600;
+}
+.vow-card p{
+  font-size:0.86rem;
+  color:var(--parchment-dim);
+  line-height:1.7;
+}
+@media (max-width: 980px){
+  .vows__grid{grid-template-columns:repeat(2,1fr);}
+}
+@media (max-width: 560px){
+  .vows__grid{grid-template-columns:1fr;}
+}
+
+/* ===================== FEATURES ===================== */
+.features__grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:22px;
+}
+.feature-card{
+  background:linear-gradient(160deg, var(--ink-soft), var(--ink));
+  border:1px solid var(--line);
+  border-radius:6px;
+  padding:30px 26px;
+  position:relative;
+  transition:transform .3s ease, border-color .3s ease;
+}
+.feature-card:hover{
+  transform:translateY(-6px);
+  border-color:var(--gold);
+}
+.feature-card__badge{
+  width:52px; height:52px;
+  border-radius:50%;
+  border:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:20px;
+  background:rgba(201,163,95,0.06);
+}
+.feature-card__badge svg{
+  width:26px; height:26px;
+  color:var(--gold-bright);
+}
+.feature-card h3{
+  font-size:1.08rem;
+  margin-bottom:10px;
+  font-weight:600;
+}
+.feature-card p{
+  font-size:0.9rem;
+  color:var(--parchment-dim);
+  line-height:1.75;
+}
+.feature-card__num{
+  position:absolute;
+  top:18px; right:22px;
+  font-family:var(--font-ui);
+  font-size:0.7rem;
+  color:var(--parchment-dim);
+  opacity:0.5;
+}
+@media (max-width: 980px){
+  .features__grid{grid-template-columns:repeat(2,1fr);}
+}
+@media (max-width: 640px){
+  .features__grid{grid-template-columns:1fr;}
+}
+
+/* ===================== REALMS (Cảnh Giới) ===================== */
+.realms{
+  background:var(--ink);
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+}
+.realms__track{
+  position:relative;
+  display:grid;
+  grid-template-columns:repeat(9,1fr);
+  gap:14px;
+}
+.realms__track::before{
+  content:"";
+  position:absolute;
+  top:23px; left:0; right:0;
+  height:1px;
+  background:linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity:0.4;
+  z-index:0;
+}
+.realm-card{
+  position:relative;
+  z-index:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  gap:12px;
+}
+.realm-card__dot{
+  width:46px; height:46px;
+  border-radius:50%;
+  background:var(--void);
+  border:1px solid var(--gold);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:var(--font-brush);
+  font-size:1.2rem;
+  color:var(--gold-bright);
+}
+.realm-card.is-final .realm-card__dot{
+  background:linear-gradient(135deg, var(--gold-bright), var(--gold));
+  color:var(--void-deep);
+  box-shadow:0 0 18px rgba(236,202,141,0.6);
+}
+.realm-card h3{
+  font-size:0.86rem;
+  font-weight:600;
+  letter-spacing:0.02em;
+}
+.realm-card span{
+  font-family:var(--font-ui);
+  font-size:0.62rem;
+  letter-spacing:0.1em;
+  color:var(--parchment-dim);
+  text-transform:uppercase;
+}
+@media (max-width: 980px){
+  .realms__track{
+    grid-template-columns:repeat(3,1fr);
+    row-gap:36px;
+  }
+  .realms__track::before{display:none;}
+}
+@media (max-width: 560px){
+  .realms__track{grid-template-columns:repeat(2,1fr);}
+}
+
+/* ===================== CÁCH CHƠI (Hướng Dẫn Nhập Môn) ===================== */
+.howto__list{
+  max-width:720px;
+  margin:0 auto;
+  position:relative;
+}
+.howto__list::before{
+  content:"";
+  position:absolute;
+  left:27px;
+  top:8px; bottom:8px;
+  width:1px;
+  background:linear-gradient(to bottom, var(--gold), var(--jade), transparent);
+  opacity:0.5;
+}
+.howto__step{
+  display:flex;
+  gap:26px;
+  position:relative;
+  padding-bottom:42px;
+}
+.howto__step:last-child{padding-bottom:0;}
+.howto__num{
+  flex-shrink:0;
+  width:56px; height:56px;
+  border-radius:50%;
+  background:var(--ink-soft);
+  border:1px solid var(--gold);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:var(--font-ui);
+  font-weight:700;
+  font-size:1.25rem;
+  color:var(--gold-bright);
+  position:relative;
+  z-index:1;
+}
+.howto__step.is-last .howto__num{
+  background:linear-gradient(135deg, var(--gold-bright), var(--gold));
+  color:var(--void-deep);
+  box-shadow:0 0 16px rgba(236,202,141,0.55);
+}
+.howto__content{padding-top:7px;}
+.howto__content h3{
+  font-size:1.08rem;
+  font-weight:600;
+  margin-bottom:8px;
+}
+.howto__content p{
+  color:var(--parchment-dim);
+  font-size:0.92rem;
+  line-height:1.75;
+}
+@media (max-width: 560px){
+  .howto__list::before{left:23px;}
+  .howto__num{width:48px; height:48px; font-size:1.1rem;}
+  .howto__step{gap:18px;}
+}
+
+/* ===================== CTA ===================== */
+.cta{
+  text-align:center;
+  position:relative;
+}
+.cta__seal{
+  font-family:var(--font-brush);
+  font-size:3rem;
+  color:var(--gold);
+  opacity:0.8;
+  margin-bottom:10px;
+}
+.cta h2{
+  font-size:clamp(1.9rem,3.6vw,2.8rem);
+  margin-bottom:18px;
+}
+.cta p{
+  color:var(--parchment-dim);
+  max-width:520px;
+  margin:0 auto 36px;
+  line-height:1.85;
+}
+.cta .btn-row{justify-content:center;}
+
+/* ===================== FOOTER ===================== */
+.site-footer{
+  border-top:1px solid var(--line);
+  padding:60px 0 32px;
+  background:var(--void-deep);
+}
+.footer__top{
+  display:flex;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:40px;
+  margin-bottom:40px;
+}
+.footer__brand{
+  max-width:320px;
+}
+.footer__brand .nav__brand{margin-bottom:14px;}
+.footer__brand p{
+  color:var(--parchment-dim);
+  font-size:0.88rem;
+  line-height:1.8;
+}
+.footer__links h4{
+  font-family:var(--font-ui);
+  font-size:0.74rem;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:16px;
+}
+.footer__links ul{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  font-size:0.88rem;
+  color:var(--parchment-dim);
+}
+.footer__links a:hover{color:var(--gold-bright);}
+.footer__bottom{
+  border-top:1px solid var(--line);
+  padding-top:24px;
+  display:flex;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:10px;
+  font-size:0.78rem;
+  color:var(--parchment-dim);
+}
+
+/* ===================== MUSIC TOGGLE ===================== */
+.music-toggle{
+  position:fixed;
+  bottom:26px; right:26px;
+  z-index:70;
+  width:54px; height:54px;
+  border-radius:50%;
+  background:var(--ink);
+  border:1px solid var(--gold);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 8px 24px rgba(0,0,0,0.4);
+  transition:transform .25s, box-shadow .25s;
+}
+.music-toggle:hover{
+  transform:scale(1.08);
+  box-shadow:0 0 18px rgba(201,163,95,0.5);
+}
+.music-toggle svg{
+  width:22px; height:22px;
+  color:var(--gold-bright);
+}
+.music-toggle .icon-off{display:none;}
+.music-toggle.is-muted .icon-on{display:none;}
+.music-toggle.is-muted .icon-off{display:block;}
+.music-toggle.is-playing{
+  animation:pulse-ring 2.4s ease-in-out infinite;
+}
+@keyframes pulse-ring{
+  0%,100%{box-shadow:0 0 0 0 rgba(201,163,95,0.35);}
+  50%{box-shadow:0 0 0 10px rgba(201,163,95,0);}
 }
 </style>
 </head>
 <body>
 
-<div class="grid-bg"></div>
-<div class="cursor" id="cursor"></div>
+<!-- ===================== MERIDIAN (mạch tu luyện theo thanh cuộn) ===================== -->
+<div class="meridian" aria-hidden="true">
+  <div class="meridian__track">
+    <div class="meridian__fill" id="meridianFill"></div>
+    <div id="meridianNodes"></div>
+  </div>
+</div>
 
-<!-- Nav -->
-<nav id="nav">
-  <a href="#" class="nav-logo">yourname.dev</a>
-  <ul class="nav-links">
-    <li><a href="#about">About</a></li>
-    <li><a href="#skills">Skills</a></li>
-    <li><a href="#projects">Projects</a></li>
-    <li><a href="#contact">Contact</a></li>
-  </ul>
-</nav>
+<!-- ===================== NHẠC NỀN =====================
+     Thẻ <audio> dưới đây sẽ tự lấy link từ CONFIG.MUSIC_URL trong <script>.
+     Bạn KHÔNG cần sửa gì ở đây — chỉ cần điền link vào CONFIG ở cuối file. -->
+<audio id="bgMusic" loop preload="none"></audio>
+<button class="music-toggle is-muted" id="musicToggle" aria-label="Tắt/Mở nhạc nền" title="Nhạc nền">
+  <svg class="icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 5V4L8 9H4z"/><path d="M16 8a5 5 0 0 1 0 8"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+  <svg class="icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 5V4L8 9H4z"/><line x1="16" y1="9" x2="22" y2="15"/><line x1="22" y1="9" x2="16" y2="15"/></svg>
+</button>
 
-<!-- Hero -->
-<section id="hero">
-  <div class="hero-top">
-    <div class="hero-status">
-      <span class="status-dot"></span>
-      Available for work
+<!-- ===================== HEADER ===================== -->
+<header class="site-header">
+  <nav class="nav">
+    <div class="nav__brand">
+      <div class="nav__seal">仙</div>
+      <div class="nav__brand-text">
+        <strong>Phàm Nhân Tu Tiên</strong>
+        <span>Bot Tu Tiên Discord</span>
+      </div>
     </div>
-    <div class="hero-time" id="clock">--:--:--</div>
+    <ul class="nav__links">
+      <li><a href="#tinhnang">Tính Năng</a></li>
+      <li><a href="#cachchoi">Cách Chơi</a></li>
+      <li><a href="#canhgioi">Cảnh Giới</a></li>
+      <li><a href="#tongquy">Tông Quy</a></li>
+      <li><a href="#lienhe">Liên Hệ</a></li>
+    </ul>
+    <div class="nav__actions">
+      <a class="btn btn--ghost" data-link="discord" href="#" target="_blank" rel="noopener">Discord</a>
+      <a class="btn btn--primary" data-link="invite" href="#" target="_blank" rel="noopener">Mời Bot</a>
+      <button class="nav__burger" id="burger" aria-label="Mở menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+  <div class="nav__mobile" id="navMobile">
+    <ul>
+      <li><a href="#tinhnang">Tính Năng</a></li>
+      <li><a href="#cachchoi">Cách Chơi</a></li>
+      <li><a href="#canhgioi">Cảnh Giới</a></li>
+      <li><a href="#tongquy">Tông Quy</a></li>
+      <li><a href="#lienhe">Liên Hệ</a></li>
+      <li><a data-link="discord" href="#" target="_blank" rel="noopener">Tham Gia Discord</a></li>
+      <li><a data-link="invite" href="#" target="_blank" rel="noopener">Mời Bot Vào Server</a></li>
+    </ul>
   </div>
+</header>
 
-  <h1 class="hero-name">
-    Your<br>
-    <span class="line2">Name</span>
-  </h1>
-
-  <div class="hero-bottom">
-    <p class="hero-desc">
-      Full-stack developer. I build things that feel as good as they work —
-      clean code, sharp interfaces, real performance.
-    </p>
-    <a href="#contact" class="hero-cta">Get in touch</a>
+<!-- ===================== HERO =====================
+     ẢNH NỀN khu vực này được nạp tự động qua JS từ CONFIG.BACKGROUND_IMAGE.
+     Không cần sửa gì trong HTML — chỉ cần điền link ảnh vào CONFIG ở cuối file. -->
+<section class="hero" id="hero">
+  <div class="hero__particles" id="particles"></div>
+  <div class="container hero__content">
+    <div class="hero__brush">凡人修仙</div>
+    <span class="eyebrow">Bot Discord Tu Tiên Huyền Huyễn</span>
+    <h1>PHÀM NHÂN TU TIÊN</h1>
+    <p>Từ một phàm nhân vô danh nơi hạ giới, tu luyện qua từng cảnh giới, độ qua thiên kiếp,
+       kết giao đạo lữ, chinh chiến tông môn — và cuối cùng phi thăng tiên giới.
+       Tất cả bắt đầu chỉ bằng một câu lệnh.</p>
+    <div class="btn-row">
+      <a class="btn btn--primary" data-link="invite" href="#" target="_blank" rel="noopener">Mời Bot Vào Server</a>
+      <a class="btn btn--ghost" data-link="discord" href="#" target="_blank" rel="noopener">Tham Gia Discord</a>
+    </div>
   </div>
-
-  <div class="hero-bg-text">DEV</div>
+  <div class="scroll-cue">
+    <span>Cuộn xuống xem đạo lộ</span>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </div>
+  <svg class="mountains" viewBox="0 0 1440 140" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0 140 L0 90 L180 40 L320 95 L460 30 L620 100 L760 50 L900 110 L1040 45 L1200 100 L1320 60 L1440 95 L1440 140 Z" fill="#12151d" opacity="0.7"/>
+    <path d="M0 140 L0 115 L200 75 L380 120 L540 70 L700 125 L880 80 L1040 130 L1220 85 L1440 120 L1440 140 Z" fill="#0a0c11"/>
+  </svg>
 </section>
 
-<!-- About -->
-<section id="about">
-  <div class="section-label"><span class="num">01</span> About</div>
-  <div class="about-grid reveal">
-    <h2 class="about-heading">
-      I build software<br>
-      <span class="hollow">that actually</span><br>
-      gets used.
-    </h2>
-    <div>
-      <p class="about-text">
-        I'm a developer with a deep interest in how things are made — not just that they work,
-        but why they feel right. Spent years across the stack, from database schemas
-        to design systems, always with the same goal: build something worth using.
-      </p>
-      <p class="about-text">
-        Outside of code I think about systems, good tools, and why most software
-        feels like it was built by someone who never had to use it.
-      </p>
-      <div class="about-meta">
-        <div class="meta-row">
-          <span class="meta-key">Location</span>
-          <span class="meta-val">Việt Nam</span>
+<!-- ===================== TÔNG QUY / VẬN HÀNH ===================== -->
+<section class="vows" id="tongquy">
+  <div class="container">
+    <div class="section-head center reveal">
+      <span class="eyebrow">Tông Quy Vận Hành</span>
+      <h2>Ngũ Đại Lời Thề</h2>
+      <p>Một tông môn vững mạnh không chỉ ở võ công, mà ở lời thề không đổi.
+         Đây là năm điều bot luôn khắc cốt ghi tâm.</p>
+    </div>
+  </div>
+  <div class="container">
+    <div class="vows__grid reveal">
+      <div class="vow-card">
+        <svg class="vow-card__icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="17"/><path d="M24 14v10l7 5"/></svg>
+        <h3>Hoạt Động 24/7</h3>
+        <p>Tu vi không nghỉ. Dù đạo hữu thức khuya luyện đan hay say ngủ giữa đêm, bot vẫn âm thầm vận hành không ngừng.</p>
+      </div>
+      <div class="vow-card">
+        <svg class="vow-card__icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 6l16 8v12c0 10-7 14-16 16-9-2-16-6-16-16V14l16-8z"/></svg>
+        <h3>Uptime Ổn Định</h3>
+        <p>Server vững như Thái Sơn bất động, hiếm khi đứt mạch tu vi giữa lúc đạo hữu đang đột phá.</p>
+      </div>
+      <div class="vow-card">
+        <svg class="vow-card__icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="10" width="28" height="28" rx="2"/><path d="M17 24h14M17 18h14M17 30h9"/></svg>
+        <h3>Lưu Trữ Lâu Dài</h3>
+        <p>Tu vi, đạo lữ, linh thú, danh hiệu — mọi thành quả tu luyện được khắc vào bia đá, không lo mất trắng qua một đêm.</p>
+      </div>
+      <div class="vow-card">
+        <svg class="vow-card__icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 24a12 12 0 0 1 20-9l4-1-1 4a12 12 0 0 1-20 9l-4 1 1-4z"/></svg>
+        <h3>Cập Nhật Thường Xuyên</h3>
+        <p>Thiên cơ vạn biến, bot không ngừng diễn hóa với tính năng và bí cảnh mới theo từng kỳ cập nhật.</p>
+      </div>
+      <div class="vow-card">
+        <svg class="vow-card__icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 8v8M24 32v8M8 24h8M32 24h8"/><circle cx="24" cy="24" r="7"/></svg>
+        <h3>Phát Triển Liên Tục</h3>
+        <p>Tiên lộ còn dài, đội ngũ phát triển vẫn ngày đêm tinh luyện để bot ngày một hoàn thiện hơn.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== TÍNH NĂNG ===================== -->
+<section id="tinhnang">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Tính Năng Tu Luyện</span>
+      <h2>Toàn Bộ Đạo Lộ Trong Một Bot</h2>
+      <p>Mười hai tính năng dệt nên một thế giới tu tiên trọn vẹn, từ ngày đầu nhập môn đến lúc phi thăng tiên giới.</p>
+    </div>
+
+    <div class="features__grid">
+
+      <div class="feature-card reveal">
+        <span class="feature-card__num">01</span>
+        <div class="feature-card__badge"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M24 8c6 4 9 9 9 14a9 9 0 1 1-18 0c0-5 3-10 9-14z"/><circle cx="24" cy="24" r="2.4" fill="currentColor" stroke="none"/></svg></div>
+        <h3>Tu Luyện &amp; Tăng Tu Vi</h3>
+        <p>Tu luyện mỗi ngày để tích lũy tu vi, nền tảng cho mọi bước tiến trên đường tu tiên.</p>
+      </div>
+
+      <div class="feature-card reveal">
+        <span class="feature-card__num">02</span>
+        <div class="feature-card__badge"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 38V14M16 22l8-8 8 8"/><path d="M12 32h24"/></svg></div>
+        <h3>Đột Phá Cảnh Giới</h3>
+        <p>Tích đủ tu vi, vượt qua thử thách để đột phá lên cảnh giới cao hơn, mở khóa sức mạnh mới.</p>
+      </div>
+
+      <div class="feature-card reveal">
+        <span class="feature-card__num">03</span>
+        <div class="feature-card__badge"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 38V20l10-10 10 10v18"/><path d="M20 38v-10h8v10"/></svg></div>
+        <h3>Bí Cảnh Săn Cơ Duyên</h3>
+        <p>Thám hiểm bí cảnh ẩn giấu, thu thập cơ duyên hiếm có mà phàm nhân khó lòng chạm tới.</p>
+      </div>
+
+      <div class="feature-card reveal">
+        <span class="feature-card__num">04</span>
+        <div class="feature-card__badge"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 10l28 28M38 10L10 38"/><path d="M10 10l4 1m24 27l-4-1M38 10l-4 1M10 38l4-1"/></svg></div>
+        <h3>PvP Đạo Hữu</h3>
+        <p>So tài cùng đạo hữu khác, tranh đoạt danh hiệu cao thủ trong các trận đấu kịch tính.</p>
+      </div>
+
+      <div class="feature-card reveal">
+        <span class="feature-card__num">05</span>
+        <div class="feature-card__badge"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 6v8M14 14h20l-3 10H17l-3-10z"/><path d="M14 38h20M19 24v14M29 24v14"/></svg></div>
+        <h3>Tông Môn</h3>
+        <p>Gia nhập hoặc lập tông môn riêng, cùng đồng đạo tu luyện, xây dựng thế lực vững mạnh.</p>
+      </div>
+
+      <div class="feature-card reveal">
+        <span class="feature-card__num">06</span>
+        <div class="feature-card__badge"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 10v28M14 16h20"/><path d="M14 16l-5 9h10l-5-9zM34 16l-5 9h10l-5-9z"/></svg></div>
+        <h3>Chợ Giao Dịch</h3>
+        <p>Mua bán linh dược, pháp bảo, nguyên liệu tu luyện ngay trong chợ giao dịch sầm uất.</p>
+      </div>
+
+      <div class="feature-card reveal">
+        <span class="feature-card__num">07</span>
+        <div class="feature-card__badge"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><ellipse cx="24" cy="29" rx="9" ry="7"/><ellipse cx="14" cy="16" rx="3.4" ry="4"/><ellipse cx="22" cy="12" rx="3.4" ry="4"/><ellipse cx="32" cy="16" rx="3.4" ry="4"/></svg></div>
+        <h3>Linh Thú Đồng Hành</h3>
+        <p>Thu phục và nuôi dưỡng linh thú, người bạn đồng hành sát cánh trên mọi chặng đường.</p>
+      </div>
+
+      <div class="feature-card reveal">
+        <span class="feature-card__num">08</span>
+        <div class="feature-card__badge"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="19" cy="22" r="9"/><circle cx="29" cy="22" r="9"/></svg></div>
+        <h3>Đạo Lữ</h3>
+        <p>Kết duyên cùng một đạo lữ, cùng nhau vượt qua kiếp nạn trên con đường tu tiên dài đằng đẵng.</p>
+      </div>
+
+      <div class="feature-card reveal">
+        <span class="feature-card__num">09</span>
+        <div class="feature-card__badge"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 26l-4-12 10 4 4-8 4 8 10-4-4 12"/><path d="M14 26h20l-2 10H16l-2-10z"/><circle cx="19" cy="22" r="1.6" fill="currentColor" stroke="none"/><circle cx="29" cy="22" r="1.6" fill="currentColor" stroke="none"/></svg></div>
+        <h3>Boss Thế Giới</h3>
+        <p>Liên thủ cùng đồng đạo khắp server để khiêu chiến những boss thế giới hung mãnh.</p>
+      </div>
+
+      <div class="feature-card reveal">
+        <span class="feature-card__num">10</span>
+        <div class="feature-card__badge"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M26 6L14 28h9l-3 14 16-22h-9l3-14z"/></svg></div>
+        <h3>Thiên Kiếp</h3>
+        <p>Đối mặt thiên kiếp định kỳ — vượt qua thì đắc đại cơ duyên, thất bại thì tổn hại không nhỏ.</p>
+      </div>
+
+      <div class="feature-card reveal">
+        <span class="feature-card__num">11</span>
+        <div class="feature-card__badge"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="18" r="10"/><path d="M18 26l-4 14 10-5 10 5-4-14"/></svg></div>
+        <h3>Thành Tựu &amp; Danh Hiệu</h3>
+        <p>Hoàn thành thử thách để nhận thành tựu và danh hiệu hiếm, khẳng định vị thế của bản thân.</p>
+      </div>
+
+      <div class="feature-card reveal">
+        <span class="feature-card__num">12</span>
+        <div class="feature-card__badge"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 8c-6 4-14 8-14 8s2 16 14 24c12-8 14-24 14-24s-8-4-14-8z"/><path d="M24 16v16"/></svg></div>
+        <h3>Phi Thăng Tiên Giới</h3>
+        <p>Đạt đến đỉnh cao tu luyện, vượt qua thử thách cuối cùng để phi thăng, ghi danh vào tiên giới.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CÁCH CHƠI ===================== -->
+<section id="cachchoi">
+  <div class="container">
+    <div class="section-head center reveal">
+      <span class="eyebrow">Hướng Dẫn Nhập Môn</span>
+      <h2>Cách Chơi</h2>
+      <p>Tám bước ngắn gọn để bắt đầu hành trình từ phàm nhân đến tiên nhân.</p>
+    </div>
+
+    <div class="howto__list">
+      <div class="howto__step reveal">
+        <div class="howto__num">1</div>
+        <div class="howto__content">
+          <h3>Đăng Ký Nhân Vật</h3>
+          <p>Gõ lệnh nhập môn, chọn xuất thân và bắt đầu hành trình tu tiên của riêng mình.</p>
         </div>
-        <div class="meta-row">
-          <span class="meta-key">Experience</span>
-          <span class="meta-val">3+ Years</span>
-        </div>
-        <div class="meta-row">
-          <span class="meta-key">Focus</span>
-          <span class="meta-val">Web · Mobile · Systems</span>
-        </div>
-        <div class="meta-row">
-          <span class="meta-key">Status</span>
-          <span class="meta-val">Open to opportunities</span>
+      </div>
+      <div class="howto__step reveal">
+        <div class="howto__num">2</div>
+        <div class="howto__content">
+          <h3>Tu Luyện Tăng Tu Vi</h3>
+          <p>Tu luyện hằng ngày để tích lũy tu vi, nền tảng cho mọi bước tiến trên đường tu tiên.</p>
         </div>
       </div>
-    </div>
-  </div>
-</section>
-
-<!-- Skills -->
-<section id="skills">
-  <div class="section-label"><span class="num">02</span> Skills</div>
-  <div class="skills-grid reveal">
-    <div class="skill-card">
-      <div class="skill-cat">Frontend</div>
-      <div class="skill-name">Interface</div>
-      <div class="skill-items">
-        <span class="skill-item">React</span>
-        <span class="skill-item">Next.js</span>
-        <span class="skill-item">TypeScript</span>
-        <span class="skill-item">Tailwind</span>
-        <span class="skill-item">Framer Motion</span>
+      <div class="howto__step reveal">
+        <div class="howto__num">3</div>
+        <div class="howto__content">
+          <h3>Đột Phá Cảnh Giới</h3>
+          <p>Khi tu vi đã đủ, tiến hành đột phá để bước lên cảnh giới cao hơn, mở khóa sức mạnh mới.</p>
+        </div>
       </div>
-    </div>
-    <div class="skill-card">
-      <div class="skill-cat">Backend</div>
-      <div class="skill-name">Systems</div>
-      <div class="skill-items">
-        <span class="skill-item">Node.js</span>
-        <span class="skill-item">Python</span>
-        <span class="skill-item">PostgreSQL</span>
-        <span class="skill-item">Redis</span>
-        <span class="skill-item">REST</span>
-        <span class="skill-item">GraphQL</span>
+      <div class="howto__step reveal">
+        <div class="howto__num">4</div>
+        <div class="howto__content">
+          <h3>Tham Gia Bí Cảnh Và PvP</h3>
+          <p>Khám phá bí cảnh để săn cơ duyên, hoặc so tài cùng đạo hữu khác trong các trận PvP.</p>
+        </div>
       </div>
-    </div>
-    <div class="skill-card">
-      <div class="skill-cat">Tooling</div>
-      <div class="skill-name">Workflow</div>
-      <div class="skill-items">
-        <span class="skill-item">Git</span>
-        <span class="skill-item">Docker</span>
-        <span class="skill-item">CI/CD</span>
-        <span class="skill-item">AWS</span>
-        <span class="skill-item">Figma</span>
-        <span class="skill-item">Linux</span>
+      <div class="howto__step reveal">
+        <div class="howto__num">5</div>
+        <div class="howto__content">
+          <h3>Thu Thập Vật Phẩm Và Tài Nguyên</h3>
+          <p>Tích lũy linh dược, pháp bảo, nguyên liệu quý hiếm để phục vụ tu luyện và giao dịch.</p>
+        </div>
       </div>
-    </div>
-  </div>
-</section>
-
-<!-- Projects -->
-<section id="projects">
-  <div class="section-label"><span class="num">03</span> Projects</div>
-  <div class="projects-list reveal">
-    <div class="project-row">
-      <span class="project-num">01</span>
-      <div class="project-info">
-        <div class="project-title">Project One</div>
-        <div class="project-desc">A web app that does something genuinely useful. Built it because nothing else did it well.</div>
+      <div class="howto__step reveal">
+        <div class="howto__num">6</div>
+        <div class="howto__content">
+          <h3>Thành Lập Hoặc Gia Nhập Tông Môn</h3>
+          <p>Tìm đồng đạo, lập thế lực riêng hoặc gia nhập một tông môn vững mạnh để cùng tu luyện.</p>
+        </div>
       </div>
-      <div class="project-tags">
-        <span class="tag">Next.js</span>
-        <span class="tag">PostgreSQL</span>
+      <div class="howto__step reveal">
+        <div class="howto__num">7</div>
+        <div class="howto__content">
+          <h3>Vượt Thiên Kiếp</h3>
+          <p>Đối mặt thiên kiếp định kỳ — vượt qua sẽ đắc đại cơ duyên, thất bại sẽ tổn hại không nhỏ.</p>
+        </div>
       </div>
-    </div>
-    <div class="project-row">
-      <span class="project-num">02</span>
-      <div class="project-info">
-        <div class="project-title">Project Two</div>
-        <div class="project-desc">Open source tool with 400+ stars. Solves a real problem in the dev workflow.</div>
-      </div>
-      <div class="project-tags">
-        <span class="tag">Node.js</span>
-        <span class="tag">CLI</span>
-        <span class="tag">Open Source</span>
-      </div>
-    </div>
-    <div class="project-row">
-      <span class="project-num">03</span>
-      <div class="project-info">
-        <div class="project-title">Project Three</div>
-        <div class="project-desc">Mobile-first dashboard. Real-time data, zero lag. Shipped in 3 weeks solo.</div>
-      </div>
-      <div class="project-tags">
-        <span class="tag">React Native</span>
-        <span class="tag">Redis</span>
-      </div>
-    </div>
-    <div class="project-row">
-      <span class="project-num">04</span>
-      <div class="project-info">
-        <div class="project-title">Project Four</div>
-        <div class="project-desc">Automation pipeline that replaced 6 hours of manual work per week. Still running.</div>
-      </div>
-      <div class="project-tags">
-        <span class="tag">Python</span>
-        <span class="tag">Docker</span>
-        <span class="tag">AWS</span>
+      <div class="howto__step is-last reveal">
+        <div class="howto__num">8</div>
+        <div class="howto__content">
+          <h3>Phi Thăng Tiên Giới</h3>
+          <p>Đạt đến đỉnh cao tu luyện, hoàn thành thử thách cuối cùng để phi thăng, ghi danh vào tiên giới.</p>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Contact -->
-<section id="contact">
-  <div class="section-label"><span class="num">04</span> Contact</div>
-  <div class="contact-inner reveal">
-    <h2 class="contact-heading">
-      Let's build<br>
-      <span class="hollow">something</span><br>
-      worth it.
-    </h2>
-    <div>
-      <p class="contact-text">
-        Open to freelance projects, full-time roles, and conversations about
-        interesting problems. If you have something worth building, reach out.
-      </p>
-      <div class="contact-links">
-        <a href="mailto:hello@yourname.dev" class="contact-link">
-          Email
-          <span>hello@yourname.dev</span>
-        </a>
-        <a href="#" class="contact-link">
-          GitHub
-          <span>github.com/yourname</span>
-        </a>
-        <a href="#" class="contact-link">
-          LinkedIn
-          <span>linkedin.com/in/yourname</span>
-        </a>
-        <a href="#" class="contact-link">
-          Twitter / X
-          <span>@yourname</span>
-        </a>
-      </div>
+<!-- ===================== CẢNH GIỚI ===================== -->
+<section class="realms" id="canhgioi">
+  <div class="container">
+    <div class="section-head center reveal">
+      <span class="eyebrow">Cửu Trọng Cảnh Giới</span>
+      <h2>Đạo Lộ Tu Tiên</h2>
+      <p>Chín cảnh giới, vô số gian nan — mỗi bước tiến là một lần thoát xác đổi hồn.</p>
+    </div>
+    <div class="realms__track reveal" id="realmsTrack"></div>
+  </div>
+</section>
+
+<!-- ===================== CTA ===================== -->
+<section class="cta" id="lienhe">
+  <div class="container reveal">
+    <div class="cta__seal">道</div>
+    <span class="eyebrow">Tiên Lộ Đương Tiền</span>
+    <h2>Đạo Hữu, Đã Sẵn Sàng Nhập Môn?</h2>
+    <p>Một câu lệnh là đủ để bắt đầu. Phàm nhân hay tiên nhân, tất cả đều khởi đầu từ bước chân đầu tiên.</p>
+    <div class="btn-row">
+      <a class="btn btn--primary" data-link="invite" href="#" target="_blank" rel="noopener">Mời Bot Vào Server</a>
+      <a class="btn btn--ghost" data-link="discord" href="#" target="_blank" rel="noopener">Tham Gia Discord</a>
     </div>
   </div>
 </section>
 
-<footer>
-  <span class="footer-left">© 2025 Your Name</span>
-  <span class="footer-right">Designed & built by me</span>
+<!-- ===================== FOOTER ===================== -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <div class="nav__brand">
+          <div class="nav__seal">仙</div>
+          <div class="nav__brand-text">
+            <strong>Phàm Nhân Tu Tiên</strong>
+            <span>Bot Tu Tiên Discord</span>
+          </div>
+        </div>
+        <p>Tu luyện vạn cổ, phi thăng tiên giới. Một thế giới tu tiên trọn vẹn ngay trong server Discord của bạn.</p>
+      </div>
+      <div class="footer__links">
+        <h4>Liên Kết</h4>
+        <ul>
+          <li><a data-link="invite" href="#" target="_blank" rel="noopener">Mời Bot Vào Server</a></li>
+          <li><a data-link="discord" href="#" target="_blank" rel="noopener">Tham Gia Discord</a></li>
+          <li><a href="#tinhnang">Tính Năng</a></li>
+          <li><a href="#canhgioi">Cảnh Giới</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© 2026 Phàm Nhân Tu Tiên Bot. Mọi quyền được bảo lưu.</span>
+      <span>Trang giới thiệu không liên kết chính thức với bất kỳ tiểu thuyết cùng tên nào.</span>
+    </div>
+  </div>
 </footer>
 
 <script>
-// Cursor
-const cursor = document.getElementById('cursor');
-let mx = 0, my = 0, cx = 0, cy = 0;
-document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-(function animate() {
-  cx += (mx - cx) * 0.18;
-  cy += (my - cy) * 0.18;
-  cursor.style.left = cx + 'px';
-  cursor.style.top = cy + 'px';
-  requestAnimationFrame(animate);
+/* ============================================================
+   CONFIG — CHỈ CẦN SỬA Ở ĐÂY LÀ TOÀN BỘ TRANG ĐƯỢC CẬP NHẬT
+   ============================================================ */
+const CONFIG = {
+  // Link ảnh nền cho khu vực Hero (đầu trang). Để trống "" nếu chưa có ảnh.
+  BACKGROUND_IMAGE: "",
+
+  // Link file nhạc .mp3 trực tiếp. Để trống "" nếu chưa có nhạc.
+  MUSIC_URL: "",
+
+  // Link mời vào server Discord của bạn
+  DISCORD_LINK: "https://discord.gg/AJzgnHUZXS",
+
+  // Link mời Bot (lấy từ Discord Developer Portal > OAuth2 > URL Generator)
+  BOT_INVITE_LINK: "https://discord.com/oauth2/authorize?client_id=1515631487905562785"
+};
+
+/* ---------- Áp dụng CONFIG vào trang ---------- */
+(function applyConfig(){
+  // Ảnh nền hero
+  if (CONFIG.BACKGROUND_IMAGE) {
+    document.getElementById('hero').style.backgroundImage =
+      "url('" + CONFIG.BACKGROUND_IMAGE + "')";
+  }
+  // Nhạc nền
+  if (CONFIG.MUSIC_URL) {
+    const audio = document.getElementById('bgMusic');
+    const src = document.createElement('source');
+    src.src = CONFIG.MUSIC_URL;
+    audio.appendChild(src);
+  }
+  // Tất cả link Discord / Mời Bot trên trang
+  document.querySelectorAll('[data-link="discord"]').forEach(el => el.href = CONFIG.DISCORD_LINK);
+  document.querySelectorAll('[data-link="invite"]').forEach(el => el.href = CONFIG.BOT_INVITE_LINK);
 })();
-document.querySelectorAll('a, .project-row, .skill-card, button').forEach(el => {
-  el.addEventListener('mouseenter', () => cursor.classList.add('expand'));
-  el.addEventListener('mouseleave', () => cursor.classList.remove('expand'));
+
+/* ---------- Menu di động ---------- */
+const burger = document.getElementById('burger');
+const navMobile = document.getElementById('navMobile');
+burger.addEventListener('click', () => navMobile.classList.toggle('is-open'));
+navMobile.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navMobile.classList.remove('is-open')));
+
+/* ---------- Nút nhạc nền (Tắt/Mở) ---------- */
+const musicToggle = document.getElementById('musicToggle');
+const bgMusic = document.getElementById('bgMusic');
+musicToggle.addEventListener('click', () => {
+  if (!CONFIG.MUSIC_URL) return; // chưa có link nhạc thì không làm gì
+  if (bgMusic.paused) {
+    bgMusic.play().catch(()=>{});
+    musicToggle.classList.remove('is-muted');
+    musicToggle.classList.add('is-playing');
+  } else {
+    bgMusic.pause();
+    musicToggle.classList.add('is-muted');
+    musicToggle.classList.remove('is-playing');
+  }
 });
 
-// Nav
-const nav = document.getElementById('nav');
-window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 40));
-
-// Live clock
-function tick() {
-  const now = new Date();
-  const t = [now.getHours(), now.getMinutes(), now.getSeconds()]
-    .map(n => String(n).padStart(2,'0')).join(':');
-  document.getElementById('clock').textContent = 'VN · ' + t;
+/* ---------- Hạt linh khí bay lên ở Hero ---------- */
+const particlesEl = document.getElementById('particles');
+const PARTICLE_COUNT = 28;
+for (let i = 0; i < PARTICLE_COUNT; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  const left = Math.random() * 100;
+  const duration = 8 + Math.random() * 10;
+  const delay = Math.random() * 12;
+  const drift = (Math.random() * 60 - 30) + 'px';
+  p.style.left = left + 'vw';
+  p.style.setProperty('--drift', drift);
+  p.style.animationDuration = duration + 's';
+  p.style.animationDelay = delay + 's';
+  particlesEl.appendChild(p);
 }
-tick(); setInterval(tick, 1000);
 
-// Reveal
-const obs = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
-}, { threshold: 0.1 });
-document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+/* ---------- Dữ liệu Cảnh Giới (dùng chung cho mạch tu luyện & bảng cảnh giới) ---------- */
+const REALMS = [
+  { name: "Luyện Khí", num: "壹" },
+  { name: "Trúc Cơ",   num: "貳" },
+  { name: "Kim Đan",   num: "叙" },
+  { name: "Nguyên Anh", num: "肆" },
+  { name: "Hóa Thần",  num: "伍" },
+  { name: "Luyện Hư",  num: "陸" },
+  { name: "Hợp Thể",   num: "柒" },
+  { name: "Đại Thừa",  num: "捌" },
+  { name: "Phi Thăng", num: "玖" }
+];
+
+/* render bảng Cảnh Giới */
+const realmsTrack = document.getElementById('realmsTrack');
+REALMS.forEach((r, i) => {
+  const card = document.createElement('div');
+  card.className = 'realm-card' + (i === REALMS.length - 1 ? ' is-final' : '');
+  card.innerHTML =
+    '<div class="realm-card__dot">' + r.num + '</div>' +
+    '<h3>' + r.name + '</h3>' +
+    '<span>Tầng ' + (i + 1) + '</span>';
+  realmsTrack.appendChild(card);
+});
+
+/* render các nút (node) trên mạch tu luyện bên trái */
+const meridianNodes = document.getElementById('meridianNodes');
+REALMS.forEach((r, i) => {
+  const pct = (i / (REALMS.length - 1)) * 100;
+  const node = document.createElement('div');
+  node.className = 'meridian__node';
+  node.style.bottom = pct + '%';
+  node.dataset.threshold = pct;
+  node.innerHTML = '<span class="meridian__label">' + r.name + '</span>';
+  meridianNodes.appendChild(node);
+});
+
+/* ---------- Cập nhật mạch tu luyện khi cuộn trang ---------- */
+const meridianFill = document.getElementById('meridianFill');
+const allNodes = () => meridianNodes.querySelectorAll('.meridian__node');
+
+function updateMeridian(){
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+  meridianFill.style.height = pct + '%';
+  allNodes().forEach(node => {
+    const threshold = parseFloat(node.dataset.threshold);
+    node.classList.toggle('is-active', pct >= threshold - 1);
+  });
+}
+window.addEventListener('scroll', updateMeridian, { passive: true });
+updateMeridian();
+
+/* ---------- Hiệu ứng xuất hiện khi cuộn ---------- */
+const revealEls = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('is-visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15 });
+revealEls.forEach(el => observer.observe(el));
 </script>
 </body>
 </html>
