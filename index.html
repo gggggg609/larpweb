@@ -6,6 +6,43 @@
 <title>Phàm Nhân Tu Tiên — Bot Discord Tu Tiên Huyền Huyễn</title>
 <meta name="description" content="Phàm Nhân Tu Tiên — bot Discord tu tiên: tu luyện, đột phá cảnh giới, bí cảnh, tông môn, PvP, đạo lữ, linh thú, thiên kiếp và phi thăng tiên giới.">
 
+<!--
+============================================================
+ HƯỚNG DẪN CHỈNH SỬA NHANH (đọc trước khi dùng file này)
+============================================================
+ Toàn bộ những gì cần đổi (ảnh nền, nhạc nền, link Discord,
+ link mời Bot) đều gom vào MỘT chỗ duy nhất: object CONFIG
+ trong <script> ở cuối file (tìm dòng "const CONFIG = {").
+
+ 1) ẢNH NỀN (khu vực đầu trang - Hero)
+    - Sửa CONFIG.BACKGROUND_IMAGE = "link ảnh của bạn"
+    - Link phải là link ảnh trực tiếp, đuôi .jpg/.png/.webp
+      (ví dụ lấy từ Imgur, Discord CDN, hoặc ảnh host riêng)
+    - Khuyến nghị ảnh tối thiểu 1920x1080 để không bị mờ/vỡ nét
+    - Nếu để trống "", trang vẫn đẹp nhờ nền gradient có sẵn
+
+ 2) NHẠC NỀN
+    - Sửa CONFIG.MUSIC_URL = "link file .mp3 trực tiếp"
+    - PHẢI là link tải trực tiếp đuôi .mp3 — KHÔNG dùng được
+      link YouTube/Spotify/SoundCloud (các trang đó chặn tải trực tiếp)
+    - Cách dễ nhất: gửi file mp3 vào một kênh Discord riêng (ví dụ
+      kênh #file-nhac chỉ bạn xem được), bấm chuột phải vào file
+      đã gửi -> "Copy Link" -> dán vào MUSIC_URL
+    - Nút loa 🔊 ở góc dưới phải trang dùng để Tắt/Mở nhạc,
+      nhạc KHÔNG tự động phát (trình duyệt chặn auto-play)
+
+ 3) LINK DISCORD SERVER & LINK MỜI BOT
+    - Sửa CONFIG.DISCORD_LINK = "https://discord.gg/xxxxx"
+    - Sửa CONFIG.BOT_INVITE_LINK = "https://discord.com/oauth2/authorize?..."
+    - Mọi nút "Mời Bot" / "Tham Gia Discord" trên trang sẽ tự
+      động dùng 2 link này, không cần sửa rải rác trong HTML
+
+ 4) MÀU SẮC / FONT CHỮ
+    - Nằm trong phần ":root { ... }" ở đầu <style>, đổi giá trị
+      mã màu (hex) tại đó nếu muốn đổi tông màu toàn trang
+============================================================
+-->
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,500;0,600;0,700;0,900;1,400&family=Oswald:wght@400;500;600;700&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
@@ -21,24 +58,61 @@ ul{list-style:none;}
 
 /* ===================== TOKENS ===================== */
 :root{
-  --void:        #0a0c11;
-  --void-deep:   #05060a;
-  --ink:         #12151d;
-  --ink-soft:    #181c26;
+  --void:        #07080b;
+  --void-deep:   #030405;
+  --ink:         #11141c;
+  --ink-soft:    #171b26;
+  --ink-elevated:#1d2230;
   --gold:        #c9a35f;
-  --gold-bright: #ecca8d;
-  --jade:        #3a7d6b;
-  --jade-bright: #6fd9b8;
+  --gold-bright: #f0cf94;
+  --gold-soft:   rgba(240,207,148,0.1);
+  --jade:        #2f6b5a;
+  --jade-bright: #5fd1a8;
+  --cinnabar:    #c9462e;
+  --cinnabar-bright: #ef6644;
   --crimson:     #8c3c3c;
   --parchment:   #ece5d4;
-  --parchment-dim: #a9a394;
-  --line:        rgba(201,163,95,0.16);
+  --parchment-dim: #9b9587;
+  --line:        rgba(201,163,95,0.14);
+  --shadow-ambient: rgba(0,0,0,0.55);
+  --overlay-a: rgba(58,125,107,0.25);
+  --overlay-b: rgba(5,6,10,0.55);
+  --overlay-c: rgba(5,6,10,0.78);
+  --cursor-mix: normal;
 
   --font-display: 'Noto Serif', serif;
   --font-brush:   'Ma Shan Zheng', cursive;
   --font-ui:      'Oswald', sans-serif;
 
   --container: 1180px;
+  --t-fast: .22s;
+  --t-mid: .45s;
+  --t-theme: .55s;
+}
+
+/* Theme sáng — "giấy bản cổ" (rice paper). Bật bằng [data-theme="light"] trên thẻ html. */
+html[data-theme="light"]{
+  --void:        #f3ead2;
+  --void-deep:   #e9dcb8;
+  --ink:         #fffaf0;
+  --ink-soft:    #fdf5e4;
+  --ink-elevated:#ffffff;
+  --gold:        #9c7322;
+  --gold-bright: #7a5713;
+  --gold-soft:   rgba(122,87,19,0.08);
+  --jade:        #1f6650;
+  --jade-bright: #114836;
+  --cinnabar:    #b8341b;
+  --cinnabar-bright: #962a14;
+  --crimson:     #7a2f2f;
+  --parchment:   #2a2316;
+  --parchment-dim: #6e6248;
+  --line:        rgba(122,87,19,0.2);
+  --shadow-ambient: rgba(120,100,60,0.25);
+  --overlay-a: rgba(31,102,80,0.1);
+  --overlay-b: rgba(243,234,210,0.45);
+  --overlay-c: rgba(243,234,210,0.82);
+  --cursor-mix: multiply;
 }
 
 @media (prefers-reduced-motion: reduce){
@@ -53,6 +127,16 @@ body{
   line-height:1.6;
   overflow-x:hidden;
   position:relative;
+  transition:background-color var(--t-theme) ease, color var(--t-theme) ease;
+}
+
+::selection{
+  background:var(--gold);
+  color:var(--void-deep);
+}
+
+@media (hover:hover) and (pointer:fine){
+  html.has-cursor, html.has-cursor *{ cursor:none !important; }
 }
 
 /* ambient glow, no image required */
@@ -64,6 +148,7 @@ body::before, body::after{
   opacity:0.16;
   z-index:0;
   pointer-events:none;
+  transition:background-color var(--t-theme) ease;
 }
 body::before{
   width:600px;height:600px;
@@ -74,6 +159,25 @@ body::after{
   width:520px;height:520px;
   background:var(--gold);
   bottom:10%; right:-180px;
+}
+
+/* ===================== HÁN TỰ NỀN (parallax) ===================== */
+.hanzi-field{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  overflow:hidden;
+}
+.hanzi-field span{
+  position:absolute;
+  font-family:var(--font-brush);
+  color:var(--gold);
+  opacity:0.05;
+  user-select:none;
+  white-space:nowrap;
+  will-change:transform;
+  transition:color var(--t-theme) ease;
 }
 
 .container{
@@ -199,6 +303,85 @@ html{
   background:var(--gold-bright);
 }
 
+/* ===================== CUSTOM CURSOR ===================== */
+.cursor-dot, .cursor-ring{
+  position:fixed;
+  top:0; left:0;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:9999;
+  transform:translate(-50%,-50%);
+  will-change:transform;
+}
+.cursor-dot{
+  width:6px; height:6px;
+  background:var(--gold-bright);
+  box-shadow:0 0 8px var(--gold-bright);
+  transition:opacity .2s, background-color var(--t-theme) ease;
+}
+.cursor-ring{
+  width:34px; height:34px;
+  border:1px solid var(--gold);
+  background:var(--gold-soft);
+  transition:width .25s cubic-bezier(.2,.8,.3,1), height .25s cubic-bezier(.2,.8,.3,1), border-color var(--t-theme) ease, background-color var(--t-theme) ease, opacity .2s;
+}
+.cursor-ring.is-hover{
+  width:60px; height:60px;
+  border-color:var(--jade-bright);
+  background:rgba(95,209,168,0.08);
+}
+.cursor-ring.is-down{
+  width:26px; height:26px;
+}
+.cursor-dot.is-hidden, .cursor-ring.is-hidden{opacity:0;}
+@media (hover:none), (pointer:coarse){
+  .cursor-dot, .cursor-ring{display:none;}
+}
+
+/* ===================== THEME TOGGLE ===================== */
+.theme-toggle{
+  width:38px; height:38px;
+  border-radius:50%;
+  border:1px solid var(--line);
+  background:var(--ink-soft);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+  flex-shrink:0;
+  transition:border-color var(--t-fast), background-color var(--t-theme) ease;
+}
+.theme-toggle:hover{border-color:var(--gold);}
+.theme-toggle svg{
+  width:18px; height:18px;
+  position:absolute;
+  color:var(--gold-bright);
+  transition:transform .45s cubic-bezier(.2,.9,.3,1.2), opacity .35s ease;
+}
+.theme-toggle .ic-sun{opacity:0; transform:translateY(14px) rotate(-40deg);}
+.theme-toggle .ic-moon{opacity:1; transform:translateY(0) rotate(0);}
+html[data-theme="light"] .theme-toggle .ic-sun{opacity:1; transform:translateY(0) rotate(0);}
+html[data-theme="light"] .theme-toggle .ic-moon{opacity:0; transform:translateY(-14px) rotate(40deg);}
+
+/* ===================== SEAL STAMP (ripple click) ===================== */
+.seal-stamp{
+  position:fixed;
+  width:10px; height:10px;
+  border:2px solid var(--cinnabar-bright);
+  border-radius:4px;
+  pointer-events:none;
+  z-index:9998;
+  transform:translate(-50%,-50%) scale(0.4);
+  opacity:0.9;
+  animation:sealPop .55s ease-out forwards;
+}
+@keyframes sealPop{
+  0%{transform:translate(-50%,-50%) scale(0.3) rotate(-8deg); opacity:0.9;}
+  60%{transform:translate(-50%,-50%) scale(1.15) rotate(2deg); opacity:0.55;}
+  100%{transform:translate(-50%,-50%) scale(1.5) rotate(2deg); opacity:0;}
+}
+
 /* ===================== MERIDIAN (signature scroll spine) ===================== */
 .meridian{
   position:fixed;
@@ -271,6 +454,10 @@ html{
   background:rgba(10,12,17,0.72);
   backdrop-filter:blur(10px);
   border-bottom:1px solid var(--line);
+  transition:background-color var(--t-theme) ease, border-color var(--t-theme) ease;
+}
+html[data-theme="light"] .site-header{
+  background:rgba(243,234,210,0.78);
 }
 .nav{
   display:flex;
@@ -330,7 +517,7 @@ html{
 .nav__links a:hover{color:var(--gold-bright);}
 .nav__actions{
   display:flex;
-  gap:12px;
+  gap:10px;
   align-items:center;
 }
 .nav__actions .btn{padding:11px 22px; font-size:0.72rem;}
@@ -347,8 +534,11 @@ html{
   height:2px;
   background:var(--parchment);
   border-radius:2px;
-  transition:transform .25s, opacity .25s;
+  transition:transform .25s, opacity .25s, background-color var(--t-theme) ease;
 }
+.nav__burger.is-open span:nth-child(1){transform:translateY(11px) rotate(45deg);}
+.nav__burger.is-open span:nth-child(2){opacity:0;}
+.nav__burger.is-open span:nth-child(3){transform:translateY(-11px) rotate(-45deg);}
 
 @media (max-width: 860px){
   .nav__links{display:none;}
@@ -359,8 +549,12 @@ html{
 .nav__mobile{
   max-height:0;
   overflow:hidden;
-  transition:max-height .3s ease;
+  transition:max-height .3s ease, border-color var(--t-theme) ease, background-color var(--t-theme) ease;
   border-top:1px solid var(--line);
+  background:rgba(10,12,17,0.85);
+}
+html[data-theme="light"] .nav__mobile{
+  background:rgba(243,234,210,0.92);
 }
 .nav__mobile.is-open{max-height:340px;}
 .nav__mobile ul{
@@ -392,9 +586,10 @@ html{
   content:"";
   position:absolute; inset:0;
   background:
-    radial-gradient(ellipse at 30% 20%, rgba(58,125,107,0.25), transparent 55%),
-    linear-gradient(180deg, rgba(5,6,10,0.55) 0%, rgba(5,6,10,0.75) 55%, var(--void) 100%);
+    radial-gradient(ellipse at 30% 20%, var(--overlay-a), transparent 55%),
+    linear-gradient(180deg, var(--overlay-b) 0%, var(--overlay-c) 55%, var(--void) 100%);
   z-index:1;
+  transition:background var(--t-theme) ease;
 }
 .hero__particles{
   position:absolute; inset:0;
@@ -451,6 +646,20 @@ html{
 }
 .hero .btn-row{justify-content:center;}
 
+/* ---- Hiệu ứng mở màn tuần tự khi tải trang ---- */
+.hero__brush, .hero .eyebrow, .hero h1, .hero p, .hero .btn-row{
+  animation:heroIn .9s cubic-bezier(.16,.84,.44,1) both;
+}
+.hero__brush{animation-delay:.05s;}
+.hero .eyebrow{animation-delay:.2s;}
+.hero h1{animation-delay:.34s;}
+.hero p{animation-delay:.52s;}
+.hero .btn-row{animation-delay:.68s;}
+@keyframes heroIn{
+  from{opacity:0; transform:translateY(24px);}
+  to{opacity:1; transform:translateY(0);}
+}
+
 .scroll-cue{
   position:absolute;
   bottom:36px; left:50%;
@@ -479,6 +688,7 @@ html{
   width:100%;
   line-height:0;
 }
+.mountains path{transition:fill var(--t-theme) ease;}
 
 /* ===================== REVEAL ===================== */
 .reveal{
@@ -496,38 +706,100 @@ html{
   background:var(--ink);
   border-top:1px solid var(--line);
   border-bottom:1px solid var(--line);
+  transition:background-color var(--t-theme) ease, border-color var(--t-theme) ease;
+  position:relative;
+  overflow:hidden;
 }
+.vows__glyph{
+  position:absolute;
+  right:2%; top:50%;
+  transform:translateY(-50%);
+  font-family:var(--font-brush);
+  font-size:22rem;
+  line-height:1;
+  color:var(--gold);
+  opacity:0.04;
+  pointer-events:none;
+  user-select:none;
+  z-index:0;
+}
+.vows .container{position:relative; z-index:1;}
 .vows__grid{
   display:grid;
-  grid-template-columns:repeat(5,1fr);
+  grid-template-columns:repeat(3,1fr);
   gap:1px;
   background:var(--line);
   border:1px solid var(--line);
+  transition:background-color var(--t-theme) ease, border-color var(--t-theme) ease;
+  border-radius:var(--r-lg);
+  overflow:hidden;
 }
 .vow-card{
   background:var(--ink);
-  padding:34px 24px;
+  padding:38px 26px;
   text-align:center;
   display:flex;
   flex-direction:column;
   align-items:center;
   gap:14px;
+  position:relative;
+  overflow:hidden;
+  transition:background-color var(--t-theme) ease, transform var(--t-fast) ease, box-shadow var(--t-fast) ease;
+  transform-style:preserve-3d;
+  will-change:transform;
+  --mx:50%; --my:50%;
 }
+.vow-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:radial-gradient(220px circle at var(--mx) var(--my), var(--gold-soft), transparent 65%);
+  opacity:0;
+  transition:opacity .4s ease;
+  pointer-events:none;
+}
+.vow-card::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border:1px solid transparent;
+  box-shadow:inset 0 0 0 1px transparent;
+  transition:box-shadow .4s ease;
+  pointer-events:none;
+}
+.vow-card:hover{
+  box-shadow:0 22px 46px -22px var(--shadow-ambient), 0 0 30px -8px rgba(201,163,95,0.35);
+}
+.vow-card:hover::before{opacity:1;}
+.vow-card:hover::after{box-shadow:inset 0 0 0 1px rgba(201,163,95,0.4);}
 .vow-card__icon{
   width:44px; height:44px;
   color:var(--gold);
+  position:relative;
+  z-index:1;
+  transition:color .4s ease, transform .4s ease, filter .4s ease;
+}
+.vow-card:hover .vow-card__icon{
+  color:var(--gold-bright);
+  transform:scale(1.1) translateZ(10px);
+  filter:drop-shadow(0 0 10px rgba(240,207,148,0.55));
 }
 .vow-card h3{
   font-size:1rem;
   font-weight:600;
+  position:relative;
+  z-index:1;
 }
 .vow-card p{
   font-size:0.86rem;
   color:var(--parchment-dim);
   line-height:1.7;
+  position:relative;
+  z-index:1;
 }
 @media (max-width: 980px){
   .vows__grid{grid-template-columns:repeat(2,1fr);}
+  .vows__glyph{font-size:14rem; opacity:0.035;}
 }
 @media (max-width: 560px){
   .vows__grid{grid-template-columns:1fr;}
@@ -539,17 +811,31 @@ html{
   grid-template-columns:repeat(3,1fr);
   gap:22px;
 }
+.features__grid .feature-card:nth-child(1){transition-delay:.02s}
+.features__grid .feature-card:nth-child(2){transition-delay:.06s}
+.features__grid .feature-card:nth-child(3){transition-delay:.10s}
+.features__grid .feature-card:nth-child(4){transition-delay:.14s}
+.features__grid .feature-card:nth-child(5){transition-delay:.18s}
+.features__grid .feature-card:nth-child(6){transition-delay:.22s}
+.features__grid .feature-card:nth-child(7){transition-delay:.02s}
+.features__grid .feature-card:nth-child(8){transition-delay:.06s}
+.features__grid .feature-card:nth-child(9){transition-delay:.10s}
+.features__grid .feature-card:nth-child(10){transition-delay:.14s}
+.features__grid .feature-card:nth-child(11){transition-delay:.18s}
+.features__grid .feature-card:nth-child(12){transition-delay:.22s}
 .feature-card{
   background:linear-gradient(160deg, var(--ink-soft), var(--ink));
   border:1px solid var(--line);
   border-radius:6px;
   padding:30px 26px;
   position:relative;
-  transition:transform .3s ease, border-color .3s ease;
+  transition:border-color .3s ease, box-shadow .3s ease, background-color var(--t-theme) ease;
+  transform-style:preserve-3d;
+  will-change:transform;
 }
 .feature-card:hover{
-  transform:translateY(-6px);
   border-color:var(--gold);
+  box-shadow:0 18px 40px -16px var(--shadow-ambient);
 }
 .feature-card__badge{
   width:52px; height:52px;
@@ -595,6 +881,7 @@ html{
   background:var(--ink);
   border-top:1px solid var(--line);
   border-bottom:1px solid var(--line);
+  transition:background-color var(--t-theme) ease, border-color var(--t-theme) ease;
 }
 .realms__track{
   position:relative;
@@ -631,6 +918,11 @@ html{
   font-family:var(--font-brush);
   font-size:1.2rem;
   color:var(--gold-bright);
+  transition:background-color var(--t-theme) ease, border-color var(--t-theme) ease, transform .3s ease, box-shadow .3s ease;
+}
+.realm-card:hover .realm-card__dot{
+  transform:scale(1.12);
+  box-shadow:0 0 16px rgba(201,163,95,0.45);
 }
 .realm-card.is-final .realm-card__dot{
   background:linear-gradient(135deg, var(--gold-bright), var(--gold));
@@ -749,6 +1041,7 @@ html{
   border-top:1px solid var(--line);
   padding:60px 0 32px;
   background:var(--void-deep);
+  transition:background-color var(--t-theme) ease, border-color var(--t-theme) ease;
 }
 .footer__top{
   display:flex;
@@ -805,8 +1098,8 @@ html{
   display:flex;
   align-items:center;
   justify-content:center;
-  box-shadow:0 8px 24px rgba(0,0,0,0.4);
-  transition:transform .25s, box-shadow .25s;
+  box-shadow:0 8px 24px var(--shadow-ambient);
+  transition:transform .25s, box-shadow .25s, background-color var(--t-theme) ease, border-color var(--t-theme) ease;
 }
 .music-toggle:hover{
   transform:scale(1.08);
@@ -829,6 +1122,13 @@ html{
 </style>
 </head>
 <body>
+
+<!-- ===================== HÁN TỰ NỀN (hiệu ứng parallax khi cuộn) ===================== -->
+<div class="hanzi-field" id="hanziField" aria-hidden="true"></div>
+
+<!-- ===================== CUSTOM CURSOR ===================== -->
+<div class="cursor-dot is-hidden" id="cursorDot" aria-hidden="true"></div>
+<div class="cursor-ring is-hidden" id="cursorRing" aria-hidden="true"></div>
 
 <!-- ===================== MERIDIAN (mạch tu luyện theo thanh cuộn) ===================== -->
 <div class="meridian" aria-hidden="true">
@@ -865,6 +1165,10 @@ html{
       <li><a href="#lienhe">Liên Hệ</a></li>
     </ul>
     <div class="nav__actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="Đổi giao diện Sáng/Tối" title="Đổi giao diện Sáng/Tối">
+        <svg class="ic-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2.5M12 19v2.5M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2.5 12H5M19 12h2.5M4.2 19.8L6 18M18 6l1.8-1.8"/></svg>
+        <svg class="ic-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/></svg>
+      </button>
       <a class="btn btn--ghost" data-link="discord" href="#" target="_blank" rel="noopener">Discord</a>
       <a class="btn btn--primary" data-link="invite" href="#" target="_blank" rel="noopener">Mời Bot</a>
       <button class="nav__burger" id="burger" aria-label="Mở menu">
@@ -874,6 +1178,13 @@ html{
   </nav>
   <div class="nav__mobile" id="navMobile">
     <ul>
+      <li style="display:flex;align-items:center;justify-content:space-between">
+        <span>Giao diện</span>
+        <button class="theme-toggle" id="themeToggleMobile" aria-label="Đổi giao diện Sáng/Tối">
+          <svg class="ic-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2.5M12 19v2.5M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2.5 12H5M19 12h2.5M4.2 19.8L6 18M18 6l1.8-1.8"/></svg>
+          <svg class="ic-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/></svg>
+        </button>
+      </li>
       <li><a href="#tinhnang">Tính Năng</a></li>
       <li><a href="#cachchoi">Cách Chơi</a></li>
       <li><a href="#canhgioi">Cảnh Giới</a></li>
@@ -907,19 +1218,20 @@ html{
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
   </div>
   <svg class="mountains" viewBox="0 0 1440 140" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M0 140 L0 90 L180 40 L320 95 L460 30 L620 100 L760 50 L900 110 L1040 45 L1200 100 L1320 60 L1440 95 L1440 140 Z" fill="#12151d" opacity="0.7"/>
-    <path d="M0 140 L0 115 L200 75 L380 120 L540 70 L700 125 L880 80 L1040 130 L1220 85 L1440 120 L1440 140 Z" fill="#0a0c11"/>
+    <path d="M0 140 L0 90 L180 40 L320 95 L460 30 L620 100 L760 50 L900 110 L1040 45 L1200 100 L1320 60 L1440 95 L1440 140 Z" fill="var(--ink-soft)" opacity="0.7"/>
+    <path d="M0 140 L0 115 L200 75 L380 120 L540 70 L700 125 L880 80 L1040 130 L1220 85 L1440 120 L1440 140 Z" fill="var(--void-deep)"/>
   </svg>
 </section>
 
 <!-- ===================== TÔNG QUY / VẬN HÀNH ===================== -->
 <section class="vows" id="tongquy">
+  <span class="vows__glyph" aria-hidden="true">誓</span>
   <div class="container">
     <div class="section-head center reveal">
       <span class="eyebrow">Tông Quy Vận Hành</span>
-      <h2>Ngũ Đại Lời Thề</h2>
+      <h2>Lục Đại Lời Thề</h2>
       <p>Một tông môn vững mạnh không chỉ ở võ công, mà ở lời thề không đổi.
-         Đây là năm điều bot luôn khắc cốt ghi tâm.</p>
+         Đây là sáu điều bot luôn khắc cốt ghi tâm.</p>
     </div>
   </div>
   <div class="container">
@@ -948,6 +1260,11 @@ html{
         <svg class="vow-card__icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 8v8M24 32v8M8 24h8M32 24h8"/><circle cx="24" cy="24" r="7"/></svg>
         <h3>Phát Triển Liên Tục</h3>
         <p>Tiên lộ còn dài, đội ngũ phát triển vẫn ngày đêm tinh luyện để bot ngày một hoàn thiện hơn.</p>
+      </div>
+      <div class="vow-card">
+        <svg class="vow-card__icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16h24M12 16l-5 11a7 7 0 0 0 14 0l-5-11M36 16l-5 11a7 7 0 0 0 14 0l-5-11M24 16v26M16 42h16"/></svg>
+        <h3>Công Bằng Tuyệt Đối</h3>
+        <p>Mọi đạo hữu đều bình đẳng dưới ánh đạo — không thiên vị, không gian lận, tu vi chân chính do nỗ lực mà thành.</p>
       </div>
     </div>
   </div>
@@ -1191,7 +1508,7 @@ const CONFIG = {
   MUSIC_URL: "",
 
   // Link mời vào server Discord của bạn
-  DISCORD_LINK: "https://dsc.gg/new4ex",
+  DISCORD_LINK: "https://discord.gg/AJzgnHUZXS",
 
   // Link mời Bot (lấy từ Discord Developer Portal > OAuth2 > URL Generator)
   BOT_INVITE_LINK: "https://discord.com/oauth2/authorize?client_id=1515631487905562785"
@@ -1219,8 +1536,8 @@ const CONFIG = {
 /* ---------- Menu di động ---------- */
 const burger = document.getElementById('burger');
 const navMobile = document.getElementById('navMobile');
-burger.addEventListener('click', () => navMobile.classList.toggle('is-open'));
-navMobile.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navMobile.classList.remove('is-open')));
+burger.addEventListener('click', () => { navMobile.classList.toggle('is-open'); burger.classList.toggle('is-open'); });
+navMobile.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { navMobile.classList.remove('is-open'); burger.classList.remove('is-open'); }));
 
 /* ---------- Nút nhạc nền (Tắt/Mở) ---------- */
 const musicToggle = document.getElementById('musicToggle');
@@ -1320,6 +1637,157 @@ const observer = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.15 });
 revealEls.forEach(el => observer.observe(el));
+
+/* ============================================================
+   NÂNG CẤP GIAO DIỆN — CURSOR TÙY CHỈNH, THEME SÁNG/TỐI,
+   HÁN TỰ NỀN, NGHIÊNG 3D, ẤN TRIỆN, NÚT TỪ TÍNH
+   ============================================================ */
+
+/* ---------- 1) THEME SÁNG / TỐI (lưu lựa chọn vào trình duyệt) ---------- */
+(function themeModule(){
+  const root = document.documentElement;
+  const KEY = 'pntt-theme';
+  const saved = localStorage.getItem(KEY);
+  const initial = saved || 'dark'; // mặc định Đen — người dùng tự chọn Sáng nếu thích
+  if (initial === 'light') root.setAttribute('data-theme', 'light');
+
+  function toggleTheme(){
+    const isLight = root.getAttribute('data-theme') === 'light';
+    if (isLight) { root.removeAttribute('data-theme'); localStorage.setItem(KEY, 'dark'); }
+    else { root.setAttribute('data-theme', 'light'); localStorage.setItem(KEY, 'light'); }
+  }
+  const btn1 = document.getElementById('themeToggle');
+  const btn2 = document.getElementById('themeToggleMobile');
+  if (btn1) btn1.addEventListener('click', toggleTheme);
+  if (btn2) btn2.addEventListener('click', toggleTheme);
+})();
+
+/* ---------- 2) CUSTOM CURSOR (chấm vàng + vòng tròn lag mượt) ---------- */
+(function cursorModule(){
+  const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if (!isFinePointer) return; // không bật trên thiết bị cảm ứng
+  document.documentElement.classList.add('has-cursor');
+
+  const dot = document.getElementById('cursorDot');
+  const ring = document.getElementById('cursorRing');
+  let mx = window.innerWidth/2, my = window.innerHeight/2;
+  let rx = mx, ry = my;
+  let visible = false;
+
+  window.addEventListener('mousemove', (e) => {
+    mx = e.clientX; my = e.clientY;
+    dot.style.transform = `translate(${mx}px, ${my}px) translate(-50%,-50%)`;
+    if (!visible){ visible = true; dot.classList.remove('is-hidden'); ring.classList.remove('is-hidden'); }
+  }, { passive:true });
+
+  window.addEventListener('mouseleave', () => { dot.classList.add('is-hidden'); ring.classList.add('is-hidden'); });
+  window.addEventListener('mousedown', () => ring.classList.add('is-down'));
+  window.addEventListener('mouseup', () => ring.classList.remove('is-down'));
+
+  function loop(){
+    rx += (mx - rx) * 0.16;
+    ry += (my - ry) * 0.16;
+    ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%,-50%)`;
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  const hoverSelector = 'a, button, .feature-card, .vow-card, .realm-card, .howto__step, input, select, .music-toggle';
+  document.querySelectorAll(hoverSelector).forEach(el => {
+    el.addEventListener('mouseenter', () => ring.classList.add('is-hover'));
+    el.addEventListener('mouseleave', () => ring.classList.remove('is-hover'));
+  });
+})();
+
+/* ---------- 3) HÁN TỰ NỀN — vài chữ lớn mờ, trôi nhẹ theo cuộn (parallax) ---------- */
+(function hanziModule(){
+  const field = document.getElementById('hanziField');
+  if (!field) return;
+  const GLYPHS = [
+    { ch:'道', top:'8%',  left:'6%',  size:'14rem', speed:0.04 },
+    { ch:'气', top:'28%', left:'82%', size:'11rem', speed:0.07 },
+    { ch:'仙', top:'52%', left:'10%', size:'16rem', speed:0.03 },
+    { ch:'劫', top:'70%', left:'78%', size:'12rem', speed:0.06 },
+    { ch:'魂', top:'90%', left:'40%', size:'13rem', speed:0.05 },
+  ];
+  GLYPHS.forEach(g => {
+    const s = document.createElement('span');
+    s.textContent = g.ch;
+    s.style.top = g.top; s.style.left = g.left; s.style.fontSize = g.size;
+    s.dataset.speed = g.speed;
+    field.appendChild(s);
+  });
+  const spans = field.querySelectorAll('span');
+  function onScroll(){
+    const y = window.scrollY;
+    spans.forEach(s => {
+      const sp = parseFloat(s.dataset.speed);
+      s.style.transform = `translateY(${y * sp}px) rotate(${y * sp * 0.02}deg)`;
+    });
+  }
+  window.addEventListener('scroll', onScroll, { passive:true });
+  onScroll();
+})();
+
+/* ---------- 4) NGHIÊNG 3D (tilt) cho feature-card & vow-card khi rê chuột ---------- */
+(function tiltModule(){
+  const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!isFinePointer || reduceMotion) return;
+
+  document.querySelectorAll('.feature-card, .vow-card').forEach(card => {
+    let raf = null;
+    const isVow = card.classList.contains('vow-card');
+    card.addEventListener('mousemove', (e) => {
+      const r = card.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width - 0.5;
+      const py = (e.clientY - r.top) / r.height - 0.5;
+      if (raf) cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        card.style.transform = `perspective(700px) rotateX(${(-py*7).toFixed(2)}deg) rotateY(${(px*9).toFixed(2)}deg) translateY(-4px)`;
+        if (isVow){
+          card.style.setProperty('--mx', ((px+0.5)*100).toFixed(1)+'%');
+          card.style.setProperty('--my', ((py+0.5)*100).toFixed(1)+'%');
+        }
+      });
+    });
+    card.addEventListener('mouseleave', () => {
+      if (raf) cancelAnimationFrame(raf);
+      card.style.transform = 'perspective(700px) rotateX(0) rotateY(0) translateY(0)';
+    });
+  });
+})();
+
+/* ---------- 5) ẤN TRIỆN (seal stamp) khi click vào nút ---------- */
+(function sealStampModule(){
+  document.querySelectorAll('.btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const seal = document.createElement('div');
+      seal.className = 'seal-stamp';
+      seal.style.left = e.clientX + 'px';
+      seal.style.top = e.clientY + 'px';
+      document.body.appendChild(seal);
+      setTimeout(() => seal.remove(), 600);
+    });
+  });
+})();
+
+/* ---------- 6) NÚT TỪ TÍNH (magnetic) cho nút chính ---------- */
+(function magneticModule(){
+  const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!isFinePointer || reduceMotion) return;
+
+  document.querySelectorAll('.btn--primary').forEach(btn => {
+    btn.addEventListener('mousemove', (e) => {
+      const r = btn.getBoundingClientRect();
+      const mx = (e.clientX - r.left - r.width/2) * 0.25;
+      const my = (e.clientY - r.top - r.height/2) * 0.35;
+      btn.style.transform = `translate(${mx}px, ${my}px)`;
+    });
+    btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
+  });
+})();
 </script>
 </body>
 </html>
