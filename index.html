@@ -205,6 +205,13 @@ body::after{
   background:var(--gold);
   display:inline-block;
 }
+.reveal .eyebrow::before{
+  width:0;
+  transition:width .6s cubic-bezier(.16,.84,.44,1) .15s;
+}
+.reveal.is-visible .eyebrow::before{
+  width:22px;
+}
 
 h1,h2,h3{
   font-family:var(--font-display);
@@ -255,11 +262,24 @@ section{
   white-space:nowrap;
 }
 .btn--primary{
+  position:relative;
+  overflow:hidden;
   background:linear-gradient(135deg, var(--gold-bright), var(--gold));
   color:var(--void-deep);
   border:1px solid var(--gold-bright);
   box-shadow:0 0 0 0 rgba(201,163,95,0.5);
 }
+.btn--primary::after{
+  content:"";
+  position:absolute;
+  top:0; left:-60%;
+  width:35%; height:100%;
+  background:linear-gradient(120deg, transparent, rgba(255,255,255,0.65), transparent);
+  transform:skewX(-20deg);
+  transition:left .65s cubic-bezier(.2,.7,.3,1);
+  pointer-events:none;
+}
+.btn--primary:hover::after{left:130%;}
 .btn--primary:hover{
   transform:translateY(-3px);
   box-shadow:0 14px 30px -8px rgba(201,163,95,0.55);
@@ -513,8 +533,18 @@ html[data-theme="light"] .site-header{
   color:var(--parchment-dim);
   transition:color .2s;
   position:relative;
+  padding-bottom:3px;
+}
+.nav__links a::after{
+  content:"";
+  position:absolute;
+  left:0; bottom:0;
+  width:0; height:1px;
+  background:var(--gold-bright);
+  transition:width .3s cubic-bezier(.2,.7,.3,1);
 }
 .nav__links a:hover{color:var(--gold-bright);}
+.nav__links a:hover::after{width:100%;}
 .nav__actions{
   display:flex;
   gap:10px;
@@ -701,6 +731,84 @@ html[data-theme="light"] .nav__mobile{
   transform:translateY(0);
 }
 
+/* ===================== ATMOSPHERE (nền khí quyển động cho section tối) ===================== */
+.atmosphere{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  pointer-events:none;
+  z-index:0;
+}
+.atmosphere::before, .atmosphere::after{
+  content:"";
+  position:absolute;
+  width:460px; height:460px;
+  border-radius:50%;
+  filter:blur(100px);
+  opacity:0.16;
+}
+.atmosphere::before{
+  background:var(--jade);
+  top:-150px; left:-90px;
+  animation:driftA 17s ease-in-out infinite;
+}
+.atmosphere::after{
+  background:var(--gold);
+  bottom:-170px; right:-110px;
+  animation:driftB 21s ease-in-out infinite;
+}
+@keyframes driftA{
+  0%,100%{transform:translate(0,0) scale(1);}
+  50%{transform:translate(55px,35px) scale(1.08);}
+}
+@keyframes driftB{
+  0%,100%{transform:translate(0,0) scale(1);}
+  50%{transform:translate(-45px,-30px) scale(1.1);}
+}
+.starfield{
+  position:absolute;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  background-image:
+    radial-gradient(1.4px 1.4px at 8% 22%, var(--gold) 0%, transparent 60%),
+    radial-gradient(1.4px 1.4px at 82% 16%, var(--gold) 0%, transparent 60%),
+    radial-gradient(1px 1px at 35% 68%, var(--jade-bright) 0%, transparent 60%),
+    radial-gradient(1.4px 1.4px at 62% 84%, var(--gold) 0%, transparent 60%),
+    radial-gradient(1px 1px at 92% 72%, var(--jade-bright) 0%, transparent 60%),
+    radial-gradient(1.4px 1.4px at 22% 90%, var(--gold) 0%, transparent 60%),
+    radial-gradient(1px 1px at 48% 12%, var(--gold) 0%, transparent 60%),
+    radial-gradient(1px 1px at 72% 48%, var(--jade-bright) 0%, transparent 60%),
+    radial-gradient(1px 1px at 15% 50%, var(--gold) 0%, transparent 60%),
+    radial-gradient(1px 1px at 56% 38%, var(--jade-bright) 0%, transparent 60%);
+  opacity:0.4;
+  transition:opacity var(--t-theme) ease;
+}
+html[data-theme="light"] .starfield{opacity:0.22;}
+.ambient-particles{
+  position:absolute;
+  inset:0;
+  z-index:0;
+  overflow:hidden;
+  pointer-events:none;
+}
+.ambient-particle{
+  position:absolute;
+  bottom:-6%;
+  width:3px; height:3px;
+  border-radius:50%;
+  background:var(--gold-bright);
+  box-shadow:0 0 6px var(--gold-bright);
+  opacity:0;
+  animation:ambientRise linear infinite;
+}
+@keyframes ambientRise{
+  0%{opacity:0; transform:translate(0,0);}
+  12%{opacity:0.55;}
+  88%{opacity:0.25;}
+  100%{opacity:0; transform:translate(var(--adrift,16px), -380px);}
+}
+
 /* ===================== VOWS (Tông Quy) ===================== */
 .vows{
   background:var(--ink);
@@ -829,10 +937,22 @@ html[data-theme="light"] .nav__mobile{
   border-radius:6px;
   padding:30px 26px;
   position:relative;
+  overflow:hidden;
   transition:border-color .3s ease, box-shadow .3s ease, background-color var(--t-theme) ease;
   transform-style:preserve-3d;
   will-change:transform;
+  --mx:50%; --my:50%;
 }
+.feature-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:radial-gradient(260px circle at var(--mx) var(--my), var(--gold-soft), transparent 65%);
+  opacity:0;
+  transition:opacity .4s ease;
+  pointer-events:none;
+}
+.feature-card:hover::before{opacity:1;}
 .feature-card:hover{
   border-color:var(--gold);
   box-shadow:0 18px 40px -16px var(--shadow-ambient);
@@ -846,20 +966,35 @@ html[data-theme="light"] .nav__mobile{
   justify-content:center;
   margin-bottom:20px;
   background:rgba(201,163,95,0.06);
+  position:relative;
+  z-index:1;
+  transition:border-color .35s ease, transform .35s ease;
+}
+.feature-card:hover .feature-card__badge{
+  border-color:var(--gold);
+  transform:scale(1.08);
 }
 .feature-card__badge svg{
   width:26px; height:26px;
   color:var(--gold-bright);
+  transition:filter .35s ease;
+}
+.feature-card:hover .feature-card__badge svg{
+  filter:drop-shadow(0 0 8px color-mix(in srgb, var(--gold-bright) 60%, transparent));
 }
 .feature-card h3{
   font-size:1.08rem;
   margin-bottom:10px;
   font-weight:600;
+  position:relative;
+  z-index:1;
 }
 .feature-card p{
   font-size:0.9rem;
   color:var(--parchment-dim);
   line-height:1.75;
+  position:relative;
+  z-index:1;
 }
 .feature-card__num{
   position:absolute;
@@ -868,6 +1003,7 @@ html[data-theme="light"] .nav__mobile{
   font-size:0.7rem;
   color:var(--parchment-dim);
   opacity:0.5;
+  z-index:1;
 }
 @media (max-width: 980px){
   .features__grid{grid-template-columns:repeat(2,1fr);}
@@ -882,7 +1018,23 @@ html[data-theme="light"] .nav__mobile{
   border-top:1px solid var(--line);
   border-bottom:1px solid var(--line);
   transition:background-color var(--t-theme) ease, border-color var(--t-theme) ease;
+  position:relative;
+  overflow:hidden;
 }
+.realms__glyph{
+  position:absolute;
+  left:2%; top:50%;
+  transform:translateY(-50%);
+  font-family:var(--font-brush);
+  font-size:20rem;
+  line-height:1;
+  color:var(--jade-bright);
+  opacity:0.045;
+  pointer-events:none;
+  user-select:none;
+  z-index:0;
+}
+.realms .container{position:relative; z-index:1;}
 .realms__track{
   position:relative;
   display:grid;
@@ -927,7 +1079,15 @@ html[data-theme="light"] .nav__mobile{
 .realm-card.is-final .realm-card__dot{
   background:linear-gradient(135deg, var(--gold-bright), var(--gold));
   color:var(--void-deep);
-  box-shadow:0 0 18px rgba(236,202,141,0.6);
+  box-shadow:0 0 18px color-mix(in srgb, var(--gold-bright) 60%, transparent);
+  animation:finalPulse 2.6s ease-in-out infinite;
+}
+.realm-card.is-final:hover .realm-card__dot{
+  animation-play-state:paused;
+}
+@keyframes finalPulse{
+  0%,100%{box-shadow:0 0 18px color-mix(in srgb, var(--gold-bright) 55%, transparent);}
+  50%{box-shadow:0 0 34px color-mix(in srgb, var(--gold-bright) 85%, transparent), 0 0 54px color-mix(in srgb, var(--gold-bright) 35%, transparent);}
 }
 .realm-card h3{
   font-size:0.86rem;
@@ -947,6 +1107,7 @@ html[data-theme="light"] .nav__mobile{
     row-gap:36px;
   }
   .realms__track::before{display:none;}
+  .realms__glyph{font-size:13rem; opacity:0.04;}
 }
 @media (max-width: 560px){
   .realms__track{grid-template-columns:repeat(2,1fr);}
@@ -1023,6 +1184,26 @@ html[data-theme="light"] .nav__mobile{
   color:var(--gold);
   opacity:0.8;
   margin-bottom:10px;
+  position:relative;
+  display:inline-block;
+  padding:16px 24px;
+}
+.cta__seal::before, .cta__seal::after{
+  content:"";
+  position:absolute;
+  left:50%; top:50%;
+  width:60px; height:60px;
+  margin:-30px 0 0 -30px;
+  border:1px solid color-mix(in srgb, var(--gold) 65%, transparent);
+  border-radius:50%;
+  opacity:0;
+  animation:qiRing 3.2s ease-out infinite;
+  pointer-events:none;
+}
+.cta__seal::after{animation-delay:1.6s;}
+@keyframes qiRing{
+  0%{transform:scale(0.5); opacity:0.5;}
+  100%{transform:scale(2.7); opacity:0;}
 }
 .cta h2{
   font-size:clamp(1.9rem,3.6vw,2.8rem);
@@ -1225,6 +1406,9 @@ html[data-theme="light"] .nav__mobile{
 
 <!-- ===================== TÔNG QUY / VẬN HÀNH ===================== -->
 <section class="vows" id="tongquy">
+  <div class="atmosphere" aria-hidden="true"></div>
+  <div class="starfield" aria-hidden="true"></div>
+  <div class="ambient-particles" id="vowsParticles" aria-hidden="true"></div>
   <span class="vows__glyph" aria-hidden="true">誓</span>
   <div class="container">
     <div class="section-head center reveal">
@@ -1441,6 +1625,10 @@ html[data-theme="light"] .nav__mobile{
 
 <!-- ===================== CẢNH GIỚI ===================== -->
 <section class="realms" id="canhgioi">
+  <div class="atmosphere" aria-hidden="true"></div>
+  <div class="starfield" aria-hidden="true"></div>
+  <div class="ambient-particles" id="realmsParticles" aria-hidden="true"></div>
+  <span class="realms__glyph" aria-hidden="true">境</span>
   <div class="container">
     <div class="section-head center reveal">
       <span class="eyebrow">Cửu Trọng Cảnh Giới</span>
@@ -1571,6 +1759,27 @@ for (let i = 0; i < PARTICLE_COUNT; i++) {
   p.style.animationDelay = delay + 's';
   particlesEl.appendChild(p);
 }
+
+/* ---------- Hạt linh khí trôi nổi trong nền các section tối (tái sử dụng) ---------- */
+function spawnAmbientParticles(containerId, count){
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  for (let i = 0; i < count; i++){
+    const p = document.createElement('div');
+    p.className = 'ambient-particle';
+    const left = Math.random() * 100;
+    const duration = 11 + Math.random() * 15;
+    const delay = Math.random() * 16;
+    const drift = (Math.random() * 50 - 25) + 'px';
+    p.style.left = left + '%';
+    p.style.setProperty('--adrift', drift);
+    p.style.animationDuration = duration + 's';
+    p.style.animationDelay = delay + 's';
+    el.appendChild(p);
+  }
+}
+spawnAmbientParticles('vowsParticles', 16);
+spawnAmbientParticles('realmsParticles', 16);
 
 /* ---------- Dữ liệu Cảnh Giới (dùng chung cho mạch tu luyện & bảng cảnh giới) ---------- */
 const REALMS = [
@@ -1737,7 +1946,6 @@ revealEls.forEach(el => observer.observe(el));
 
   document.querySelectorAll('.feature-card, .vow-card').forEach(card => {
     let raf = null;
-    const isVow = card.classList.contains('vow-card');
     card.addEventListener('mousemove', (e) => {
       const r = card.getBoundingClientRect();
       const px = (e.clientX - r.left) / r.width - 0.5;
@@ -1745,10 +1953,8 @@ revealEls.forEach(el => observer.observe(el));
       if (raf) cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => {
         card.style.transform = `perspective(700px) rotateX(${(-py*7).toFixed(2)}deg) rotateY(${(px*9).toFixed(2)}deg) translateY(-4px)`;
-        if (isVow){
-          card.style.setProperty('--mx', ((px+0.5)*100).toFixed(1)+'%');
-          card.style.setProperty('--my', ((py+0.5)*100).toFixed(1)+'%');
-        }
+        card.style.setProperty('--mx', ((px+0.5)*100).toFixed(1)+'%');
+        card.style.setProperty('--my', ((py+0.5)*100).toFixed(1)+'%');
       });
     });
     card.addEventListener('mouseleave', () => {
